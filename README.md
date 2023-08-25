@@ -1,45 +1,25 @@
-# snowball-ts-lib-template
+# Snowball TS Auth
 
-NOTE: This is a template for creating a typescript library. It is not intended to be used as a library.
+This is a simple library to authenticate with the Snowball SDK
 
-Create a new typescript library
-
-## Create an [npm account](https://www.npmjs.com) and login
+## Installation
 
 ```sh
-npm login
-```
-
-## [Init](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages)
-
-scoped to org or user:
-
-```sh
-npm init --scope=@<my-org or my-username>
-```
-
-## Update version
-
-```sh
-npm version <update_type>
-```
-
-## Publish
-
-```sh
-npm publish --access <>
+npm i @snowballtools/snowball-ts-auth
 ```
 
 ```sh
-yarn publish --access <>
+yarn add @snowballtools/snowball-ts-auth
 ```
 
-## Install
+## Usage
 
-```sh
-npm i @snowballtools/snowball-ts-lib-template
-```
+```ts
+import { SnowballAuth } from '@snowballtools/snowball-ts-auth';
 
-```sh
-yarn add @snowballtools/snowball-ts-lib-template
+const snowball = SnowballAuth('token');
+
+const register = await snowball.registerPasskey('username', 'password').then(...).catch(...);
+const login = await snowball.authenticatePasskey('username', 'password').then(...).catch(...);
+
 ```

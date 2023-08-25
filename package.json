@@ -1,10 +1,7 @@
 {
   "name": "@snowballtools/snowball-ts-auth",
-  "version": "0.0.1",
-  "author": {
-    "name": "Snowball Tools Inc.",
-    "email": "viv@snowballtools.xyz"
-  },
+  "version": "0.0.8",
+  "author": "Snowball Tools Inc. <viv@snowballtools.xyz>",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "license": "LGPL-3.0-or-later",
@@ -12,17 +9,13 @@
     "build": "tsc",
     "prepublishOnly": "yarn run build",
     "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "publish": "npm publish --access public"
+    "lint:fix": "eslint --fix"
   },
   "description": "example ts lib",
   "directories": {
     "lib": "lib"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/snowball-tools/snowball-ts-auth.git"
-  },
+  "repository": "https://github.com/snowball-tools/snowball-ts-auth",
   "keywords": [
     "ts"
   ],
@@ -42,7 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.5.5",
-    "typescript": "^5.2.2",
-    "eslint": "8.47.0"
+    "eslint": "8.47.0",
+    "typescript": "^5.2.2"
   }
 }
