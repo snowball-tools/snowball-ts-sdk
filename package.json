@@ -1,6 +1,6 @@
 {
   "name": "@snowballtools/snowball-ts-auth",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Snowball Tools Inc. <viv@snowballtools.xyz>",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
