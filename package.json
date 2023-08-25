@@ -1,17 +1,19 @@
 {
-  "name": "@snowballtools/snowball-ts-lib-template",
-  "version": "0.0.3",
-  "author": "Snowball Tools Inc. <viv@iglootools.xyz>",
+  "name": "@snowballtools/snowball-ts-auth",
+  "version": "0.0.1",
+  "author": {
+    "name": "Snowball Tools Inc.",
+    "email": "viv@snowballtools.xyz"
+  },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "license": "MIT",
+  "license": "LGPL-3.0-or-later",
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "yarn run build"
-  },
-  "devDependencies": {
-    "@types/node": "^20.5.5",
-    "typescript": "^5.2.2"
+    "prepublishOnly": "yarn run build",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "publish": "npm publish --access public"
   },
   "description": "example ts lib",
   "directories": {
@@ -19,13 +21,28 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/snowball-tools/igloo-ts-lib-template.git"
+    "url": "git+https://github.com/snowball-tools/snowball-ts-auth.git"
   },
   "keywords": [
     "ts"
   ],
   "bugs": {
-    "url": "https://github.com/snowball-tools/igloo-ts-lib-template/issues"
+    "url": "https://github.com/snowball-tools/snowball-ts-auth/issues"
   },
-  "homepage": "https://github.com/snowball-tools/igloo-ts-lib-template#readme"
+  "homepage": "https://github.com/snowball-tools/snowball-ts-auth#readme",
+  "private": false,
+  "dependencies": {
+    "@ethersproject/contracts": "^5.7.0",
+    "@ethersproject/hash": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/wallet": "^5.7.0",
+    "@lit-protocol/constants": "^2.2.50",
+    "@lit-protocol/encryption": "^2.2.50",
+    "@lit-protocol/lit-auth-client": "^2.2.50"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.5",
+    "typescript": "^5.2.2",
+    "eslint": "8.47.0"
+  }
 }
