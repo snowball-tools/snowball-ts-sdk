@@ -19,7 +19,7 @@ import { SnowballAuth } from '@snowballtools/snowball-ts-auth';
 
 const snowball = SnowballAuth('token');
 
-const register = await snowball.registerPasskey('username', 'password').then(...).catch(...);
-const login = await snowball.authenticatePasskey('username', 'password').then(...).catch(...);
+const register = await snowball.registerPasskey('username').then(...).catch(...);
+const login = await snowball.authenticatePasskey().then(...).catch(...);
 
 ```
