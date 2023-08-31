@@ -1,12 +1,12 @@
-import { AuthMethod } from "@lit-protocol/types";
-declare class SnowballAuth {
-    private litAuthClient;
-    private webAuthnProvider;
-    constructor(apiKey: string);
-    registerPasskey(username: string): Promise<{
-        pkpEthAddress: string;
-        pkpPublicKey: string;
-    }>;
-    authenticatePasskey(): Promise<AuthMethod>;
+import { SimpleSmartAccountOwner, Address, Hex } from "@alchemy/aa-core";
+import { Chain } from "./helpers/chains";
+export interface SnowballAuth {
+    chain: Chain;
+    registerPasskey(username: string): Promise<Boolean>;
+    authenticatePasskey(): Promise<Boolean>;
+    getSimpleAccountOwner(chain: Chain): Promise<SimpleSmartAccountOwner>;
 }
-export default SnowballAuth;
+export interface SnowballSmartWallet {
+    getSmartWalletAddress(): Promise<Address>;
+    sendUserOperation(gasPolicyId: string, targetAddress: Address, data: Hex): Promise<Boolean>;
+}

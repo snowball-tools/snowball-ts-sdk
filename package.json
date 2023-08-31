@@ -11,7 +11,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
-  "description": "example ts lib",
+  "description": "snowball auth library",
   "directories": {
     "lib": "lib"
   },
@@ -25,13 +25,21 @@
   "homepage": "https://github.com/snowball-tools/snowball-ts-auth#readme",
   "private": false,
   "dependencies": {
+    "@alchemy/aa-alchemy": "^0.1.0-alpha.29",
+    "@alchemy/aa-core": "^0.1.0-alpha.29",
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/hash": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/wallet": "^5.7.0",
+    "@lit-protocol/auth-helpers": "^2.2.50",
     "@lit-protocol/constants": "^2.2.50",
     "@lit-protocol/encryption": "^2.2.50",
-    "@lit-protocol/lit-auth-client": "^2.2.50"
+    "@lit-protocol/lit-auth-client": "^2.2.50",
+    "@lit-protocol/pkp-ethers": "^2.2.50",
+    "@lit-protocol/types": "^2.2.50",
+    "alchemy-sdk": "^2.10.0",
+    "ethers": "^5.5.1",
+    "viem": "^1.9.3"
   },
   "devDependencies": {
     "@types/node": "^20.5.5",
