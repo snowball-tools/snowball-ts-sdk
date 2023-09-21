@@ -15,12 +15,9 @@ export interface SnowballAuth {
   getSimpleAccountOwner(chain: Chain): Promise<SimpleSmartAccountOwner>;
 }
 
-export interface SnowballSmartWallet {
-  getSmartWalletAddress(): Promise<Address>;
-  gasEstimator(
-    struct: Deferrable<UserOperationStruct>
-  ): Promise<Deferrable<UserOperationStruct>>;
-  sendUserOperation(
+export interface SnowballSmartWallet extends SimpleSmartAccountOwner {
+  auth: SnowballAuth;
+  sendUserOp(
     targetAddress: Address,
     data: Hex,
     sponsorGas: Boolean
@@ -31,13 +28,13 @@ class Snowball {
   public auth: SnowballAuth;
   public smartWallet: SnowballSmartWallet;
 
-  constructor(auth: SnowballAuth, smartWallet: SnowballSmartWallet) {
-    this.auth = auth;
+  constructor(smartWallet: SnowballSmartWallet) {
+    this.auth = smartWallet.auth;
     this.smartWallet = smartWallet;
   }
 
   async getSmartWalletAddress(): Promise<Address> {
-    return this.smartWallet.getSmartWalletAddress();
+    return this.smartWallet.getAddress();
   }
 
   async sendUserOperation(
@@ -45,6 +42,6 @@ class Snowball {
     data: Hex,
     sponsorGas: Boolean
   ): Promise<Boolean> {
-    return this.smartWallet.sendUserOperation(targetAddress, data, sponsorGas);
+    return this.smartWallet.sendUserOp(targetAddress, data, sponsorGas);
   }
 }
