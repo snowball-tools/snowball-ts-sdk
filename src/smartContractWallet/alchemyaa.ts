@@ -1,26 +1,16 @@
-import { SnowballAuth, SnowballSmartWallet } from "..";
-import { getAlchemyNetwork, viemChain } from "../helpers/chains";
-import {
-  SimpleSmartContractAccount,
-  SimpleSmartAccountOwner,
-  Address,
-  SendUserOperationResult,
-  Hex,
-  SmartAccountProvider,
-  HttpTransport,
-  UserOperationStruct,
-  Deferrable,
-} from "@alchemy/aa-core";
+import { viemChain } from "../helpers/chains";
+import type { Address, SendUserOperationResult, Hex } from "@alchemy/aa-core";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { retry } from "../helpers/promise";
-import { Alchemy } from "alchemy-sdk";
+import type { SnowballAuth, SnowballSmartWallet } from "../snowball";
+// import { Alchemy } from "alchemy-sdk";
 
-class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
+export class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
   public auth: SnowballAuth;
-  private simpleAccountOwner: SimpleSmartAccountOwner | undefined;
-  private address: Address | undefined;
-  private apiKey: string;
-  private alchemy: Alchemy;
+  // private simpleAccountOwner: SimpleSmartAccountOwner | undefined;
+  // private address: Address | undefined;
+  // private apiKey: string;
+  // private alchemy: Alchemy;
   private gasPolicyId: string | undefined;
 
   constructor(
@@ -34,13 +24,13 @@ class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
       apiKey: apiKey,
     });
     this.auth = auth;
-    this.apiKey = apiKey;
+    // this.apiKey = apiKey;
     this.gasPolicyId = gasPolicyId;
 
-    this.alchemy = new Alchemy({
-      apiKey: apiKey,
-      network: getAlchemyNetwork(this.auth.chain),
-    });
+    // this.alchemy = new Alchemy({
+    //   apiKey: apiKey,
+    //   network: getAlchemyNetwork(this.auth.chain),
+    // });
   }
 
   async sendUserOp(
@@ -66,7 +56,7 @@ class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
       }
 
       // wait for user op
-      let receipt = await retry(
+      await retry(
         this.waitForUserOperationTransaction,
         [result.hash as Address],
         10
@@ -88,5 +78,3 @@ class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
     }
   }
 }
-
-export default AlchemyAA;

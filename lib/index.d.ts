@@ -1,21 +1,4 @@
-import { SimpleSmartAccountOwner, Address, Hex, ISmartAccountProvider, SendUserOperationResult } from "@alchemy/aa-core";
-import { Chain } from "./helpers/chains";
-import { FallbackTransport, Transport } from "viem";
-export interface SnowballAuth {
-    chain: Chain;
-    isWebAuthnSupported(): boolean;
-    registerPasskey(username: string): Promise<void>;
-    authenticatePasskey(): Promise<void>;
-    getSimpleAccountOwner(chain: Chain): Promise<SimpleSmartAccountOwner>;
-}
-export interface SnowballSmartWallet<TTransport extends Transport | FallbackTransport = Transport> extends ISmartAccountProvider<TTransport> {
-    auth: SnowballAuth;
-    sendUserOp(targetAddress: Address, data: Hex, sponsorGas: Boolean): Promise<SendUserOperationResult>;
-}
-export declare class Snowball {
-    auth: SnowballAuth;
-    smartWallet: SnowballSmartWallet;
-    constructor(smartWallet: SnowballSmartWallet);
-    getSmartWalletAddress(): Promise<Address>;
-    sendUserOperation(targetAddress: Address, data: Hex, sponsorGas: Boolean): Promise<SendUserOperationResult>;
-}
+export { Snowball, type SnowballAuth, type SnowballSmartWallet, } from "./snowball";
+export { type Chain } from "./helpers/chains";
+export { LitAuth } from "./auth/lit";
+export { AlchemyAA } from "./smartContractWallet/alchemyaa";

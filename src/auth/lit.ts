@@ -1,7 +1,7 @@
 import { LitAuthClient, WebAuthnProvider } from "@lit-protocol/lit-auth-client";
 import { ProviderType } from "@lit-protocol/constants";
 import { LitNodeClient } from "@lit-protocol/lit-node-client";
-import {
+import type {
   AuthMethod,
   AuthCallbackParams,
   IRelayPKP,
@@ -9,20 +9,20 @@ import {
 } from "@lit-protocol/types";
 import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers";
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import {
+import type {
   SimpleSmartAccountOwner,
   Address,
   SignTypedDataParams,
 } from "@alchemy/aa-core";
-import { TypedDataField } from "@ethersproject/abstract-signer";
+import type { TypedDataField } from "@ethersproject/abstract-signer";
 import { DEFAULT_EXP } from "../helpers/constants";
-import { Chain } from "../helpers/chains";
-import Passkey from "./passkey";
+import type { Chain } from "../helpers/chains";
+import { Passkey } from "./passkey";
 
-class LitAuth extends Passkey {
-  public litAuthClient: LitAuthClient;
-  public webAuthnProvider: WebAuthnProvider;
-  public litNodeClient: LitNodeClient;
+export class LitAuth extends Passkey {
+  litAuthClient: LitAuthClient;
+  webAuthnProvider: WebAuthnProvider;
+  litNodeClient: LitNodeClient;
 
   private authenticated: AuthMethod | undefined;
   private pkpPublicKey: string | undefined;
@@ -77,8 +77,8 @@ class LitAuth extends Passkey {
             );
           }
 
-          this.pkpEthAddress = response.pkpEthAddress;
           this.pkpPublicKey = response.pkpPublicKey;
+          this.pkpEthAddress = response.pkpEthAddress;
 
           return response;
         });
@@ -261,5 +261,3 @@ class LitAuth extends Passkey {
     }
   }
 }
-
-export default LitAuth;

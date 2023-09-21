@@ -1,10 +1,10 @@
 import { LitAuthClient, WebAuthnProvider } from "@lit-protocol/lit-auth-client";
 import { LitNodeClient } from "@lit-protocol/lit-node-client";
-import { IRelayPKP } from "@lit-protocol/types";
-import { SimpleSmartAccountOwner } from "@alchemy/aa-core";
-import { Chain } from "../helpers/chains";
-import Passkey from "./passkey";
-declare class LitAuth extends Passkey {
+import type { IRelayPKP } from "@lit-protocol/types";
+import type { SimpleSmartAccountOwner } from "@alchemy/aa-core";
+import type { Chain } from "../helpers/chains";
+import { Passkey } from "./passkey";
+export declare class LitAuth extends Passkey {
     litAuthClient: LitAuthClient;
     webAuthnProvider: WebAuthnProvider;
     litNodeClient: LitNodeClient;
@@ -22,4 +22,3 @@ declare class LitAuth extends Passkey {
     createPkpEthersWallet(): Promise<Boolean>;
     getSimpleAccountOwner(): Promise<SimpleSmartAccountOwner>;
 }
-export default LitAuth;

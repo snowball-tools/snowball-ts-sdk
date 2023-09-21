@@ -1,5 +1,5 @@
-import { Address } from "viem";
-import { mainnet, sepolia, goerli, Chain as ViemChain } from "viem/chains";
+import type { Address } from "viem";
+import { mainnet, sepolia, goerli, type Chain as ViemChain } from "viem/chains";
 import { Network } from "alchemy-sdk";
 
 export interface Chain {
