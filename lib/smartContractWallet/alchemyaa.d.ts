@@ -1,14 +1,14 @@
 import { SnowballAuth, SnowballSmartWallet } from "..";
-import { Address, Hex } from "@alchemy/aa-core";
-declare class AlchemyAA implements SnowballSmartWallet {
-    private auth;
+import { Address, SendUserOperationResult, Hex } from "@alchemy/aa-core";
+import { AlchemyProvider } from "@alchemy/aa-alchemy";
+declare class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
+    auth: SnowballAuth;
     private simpleAccountOwner;
-    private provider;
     private address;
     private apiKey;
     private alchemy;
-    constructor(auth: SnowballAuth, apiKey: string);
-    getSmartWalletAddress(): Promise<Address>;
-    sendUserOperation(gasPolicyId: string, targetAddress: Address, data: Hex): Promise<Boolean>;
+    private gasPolicyId;
+    constructor(auth: SnowballAuth, apiKey: string, gasPolicyId: string | undefined);
+    sendUserOp(targetAddress: Address, data: Hex, sponsorGas: Boolean): Promise<SendUserOperationResult>;
 }
 export default AlchemyAA;

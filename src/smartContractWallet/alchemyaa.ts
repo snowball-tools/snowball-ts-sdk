@@ -47,7 +47,7 @@ class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
     targetAddress: Address,
     data: Hex,
     sponsorGas: Boolean
-  ): Promise<Boolean> {
+  ): Promise<SendUserOperationResult> {
     try {
       if (this.gasPolicyId !== undefined && sponsorGas) {
         this.withAlchemyGasManager({
@@ -82,7 +82,7 @@ class AlchemyAA extends AlchemyProvider implements SnowballSmartWallet {
         return Promise.reject("Transaction failed");
       }
 
-      return true;
+      return result;
     } catch (error) {
       return Promise.reject(`Transaction failed ${error}`);
     }

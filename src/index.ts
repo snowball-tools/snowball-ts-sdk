@@ -2,10 +2,11 @@ import {
   SimpleSmartAccountOwner,
   Address,
   Hex,
-  UserOperationStruct,
-  Deferrable,
+  ISmartAccountProvider,
+  SendUserOperationResult,
 } from "@alchemy/aa-core";
 import { Chain } from "./helpers/chains";
+import { FallbackTransport, Transport } from "viem";
 
 export interface SnowballAuth {
   chain: Chain;
@@ -15,16 +16,18 @@ export interface SnowballAuth {
   getSimpleAccountOwner(chain: Chain): Promise<SimpleSmartAccountOwner>;
 }
 
-export interface SnowballSmartWallet extends SimpleSmartAccountOwner {
+export interface SnowballSmartWallet<
+  TTransport extends Transport | FallbackTransport = Transport
+> extends ISmartAccountProvider<TTransport> {
   auth: SnowballAuth;
   sendUserOp(
     targetAddress: Address,
     data: Hex,
     sponsorGas: Boolean
-  ): Promise<Boolean>;
+  ): Promise<SendUserOperationResult>;
 }
 
-class Snowball {
+export class Snowball {
   public auth: SnowballAuth;
   public smartWallet: SnowballSmartWallet;
 
@@ -41,7 +44,7 @@ class Snowball {
     targetAddress: Address,
     data: Hex,
     sponsorGas: Boolean
-  ): Promise<Boolean> {
+  ): Promise<SendUserOperationResult> {
     return this.smartWallet.sendUserOp(targetAddress, data, sponsorGas);
   }
 }
