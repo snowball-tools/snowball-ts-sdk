@@ -6,6 +6,10 @@ import {
   Address,
   SendUserOperationResult,
   Hex,
+  SmartAccountProvider,
+  HttpTransport,
+  UserOperationStruct,
+  Deferrable,
 } from "@alchemy/aa-core";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { retry } from "../helpers/promise";
@@ -18,10 +22,16 @@ class AlchemyAA implements SnowballSmartWallet {
   private address: Address | undefined;
   private apiKey: string;
   private alchemy: Alchemy;
+  private gasPolicyId: string | undefined;
 
-  constructor(auth: SnowballAuth, apiKey: string) {
+  constructor(
+    auth: SnowballAuth,
+    apiKey: string,
+    gasPolicyId: string | undefined
+  ) {
     this.auth = auth;
     this.apiKey = apiKey;
+    this.gasPolicyId = gasPolicyId;
 
     this.alchemy = new Alchemy({
       apiKey: apiKey,
@@ -29,7 +39,20 @@ class AlchemyAA implements SnowballSmartWallet {
     });
   }
 
-  async getSmartWalletAddress(): Promise<Address> {
+  async gasEstimator(
+    struct: Deferrable<UserOperationStruct>
+  ): Promise<Deferrable<UserOperationStruct>> {
+    try {
+      if (this.provider === undefined) {
+        this.provider = await this.getAlchemyProvider();
+      }
+      return await this.provider.gasEstimator(struct);
+    } catch (error) {
+      return Promise.reject("Gas estimation failed");
+    }
+  }
+
+  async getAlchemyProvider(): Promise<AlchemyProvider> {
     try {
       this.simpleAccountOwner = await this.auth.getSimpleAccountOwner(
         this.auth.chain
@@ -41,7 +64,7 @@ class AlchemyAA implements SnowballSmartWallet {
         return Promise.reject("SimpleAccountOwner is undefined");
       }
 
-      this.provider = new AlchemyProvider({
+      return new AlchemyProvider({
         chain: viemChain(this.auth.chain),
         entryPointAddress: this.auth.chain.entryPointAddress,
         apiKey: this.apiKey,
@@ -55,6 +78,16 @@ class AlchemyAA implements SnowballSmartWallet {
             rpcClient,
           })
       );
+    } catch (error) {
+      return Promise.reject("Getting alchemy provider failed");
+    }
+  }
+
+  async getSmartWalletAddress(): Promise<Address> {
+    try {
+      if (this.provider === undefined) {
+        this.provider = await this.getAlchemyProvider();
+      }
 
       const address = await this.provider.getAddress();
 
@@ -71,21 +104,21 @@ class AlchemyAA implements SnowballSmartWallet {
   }
 
   async sendUserOperation(
-    gasPolicyId: string,
     targetAddress: Address,
-    data: Hex
+    data: Hex,
+    sponsorGas: Boolean
   ): Promise<Boolean> {
     try {
       if (this.provider === undefined) {
-        await this.getSmartWalletAddress().catch((error) => {
-          return Promise.reject(error);
-        });
+        this.provider = await this.getAlchemyProvider();
       }
 
-      this.provider = this.provider!.withAlchemyGasManager({
-        policyId: gasPolicyId,
-        entryPoint: this.auth.chain.entryPointAddress,
-      });
+      if (this.gasPolicyId !== undefined && sponsorGas) {
+        this.provider = this.provider!.withAlchemyGasManager({
+          policyId: this.gasPolicyId,
+          entryPoint: this.auth.chain.entryPointAddress,
+        });
+      }
 
       const result: SendUserOperationResult =
         await this.provider.sendUserOperation({

@@ -17,24 +17,24 @@ import {
 import { TypedDataField } from "@ethersproject/abstract-signer";
 import { DEFAULT_EXP } from "../helpers/constants";
 import { Chain } from "../helpers/chains";
-import { SnowballAuth } from "..";
+import Passkey from "./passkey";
 
-class LitAuth implements SnowballAuth {
-  private litAuthClient: LitAuthClient;
-  private webAuthnProvider: WebAuthnProvider;
-  private litNodeClient: LitNodeClient;
+class LitAuth extends Passkey {
+  public litAuthClient: LitAuthClient;
+  public webAuthnProvider: WebAuthnProvider;
+  public litNodeClient: LitNodeClient;
 
   private authenticated: AuthMethod | undefined;
   private pkpPublicKey: string | undefined;
   private pkpEthAddress: string | undefined;
   private sessionSig: SessionSigsMap | undefined;
   private pkpWallet: PKPEthersWallet | undefined;
-  public chain: Chain;
 
   // to do: get setter
   public simpleAccountOwner: SimpleSmartAccountOwner | undefined;
 
   constructor(apiKey: string, chain: Chain) {
+    super(chain);
     this.litAuthClient = new LitAuthClient({
       litRelayConfig: {
         relayApiKey: apiKey,
@@ -51,47 +51,48 @@ class LitAuth implements SnowballAuth {
       litNetwork: "serrano",
       debug: false,
     });
-
-    this.chain = chain;
   }
 
-  async registerPasskey(username: string): Promise<Boolean> {
+  async registerPasskey(username: string): Promise<void> {
     try {
       const options = await this.webAuthnProvider.register(username);
       const txHash = await this.webAuthnProvider.verifyAndMintPKPThroughRelayer(
         options
       );
-      const response =
-        await this.webAuthnProvider.relay.pollRequestUntilTerminalState(txHash);
 
-      if (
-        response.pkpEthAddress === undefined ||
-        response.pkpPublicKey === undefined
-      ) {
-        return Promise.reject(
-          "Registration failed. pkpEthAddress or pkpPublicKey undefined"
-        );
-      }
+      await this.webAuthnProvider.relay
+        .pollRequestUntilTerminalState(txHash)
+        .catch((error) => {
+          return Promise.reject(
+            `pollRequestUntilTerminalState failed ${error}`
+          );
+        })
+        .then((response) => {
+          if (
+            response.pkpEthAddress === undefined ||
+            response.pkpPublicKey === undefined
+          ) {
+            return Promise.reject(
+              `pollRequestUntilTerminalState failed ${response}`
+            );
+          }
 
-      this.pkpEthAddress = response.pkpEthAddress;
-      this.pkpPublicKey = response.pkpPublicKey;
+          this.pkpEthAddress = response.pkpEthAddress;
+          this.pkpPublicKey = response.pkpPublicKey;
 
-      return true;
+          return response;
+        });
+
+      return Promise.resolve();
     } catch (error) {
-      return Promise.reject(`Registration failed ${error}`);
+      return Promise.reject(`registerPasskey failed: ${error}`);
     }
   }
 
-  async authenticatePasskey(): Promise<Boolean> {
+  async authenticatePasskey(): Promise<void> {
     try {
-      const auth = await this.webAuthnProvider.authenticate();
-
-      if (auth === undefined) {
-        return Promise.reject("Authentication failed");
-      }
-
-      this.authenticated = auth;
-      return true;
+      this.authenticated = await this.webAuthnProvider.authenticate();
+      return Promise.resolve();
     } catch (error) {
       return Promise.reject(`Authentication failed ${error}`);
     }
