@@ -1,4 +1,4 @@
-import LitAuth from "../../src/auth/lit";
+import { LitPasskey } from "../../src/Auth/LitPasskey";
 
 describe("LitAuth", () => {
   test("add should return the sum of two numbers", () => {

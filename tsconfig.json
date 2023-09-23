@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "outDir": "./lib",
+    "outDir": "dist",
     "strict": true,
     "skipLibCheck": true,
     "inlineSources": true,
     "noEmit": false,
     "sourceMap": true,
-    "lib": ["es2022"],
-    "target": "es2021",
+    "lib": ["dom", "es2022"],
+    "target": "es2022",
     "allowJs": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -21,7 +21,8 @@
     "useDefineForClassFields": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-    "useUnknownInCatchVariables": true
+    "useUnknownInCatchVariables": true,
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
