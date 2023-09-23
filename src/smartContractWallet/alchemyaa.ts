@@ -44,122 +44,6 @@ export class AlchemyAA extends SmartContractWallet {
     );
   }
 
-  async sendUserOperation(
-    data: UserOperationCallData | BatchUserOperationCallData
-  ): Promise<SendUserOperationResult> {
-    return await this.provider.sendUserOperation(data);
-  }
-
-  async buildUserOperation(
-    data: UserOperationCallData | BatchUserOperationCallData
-  ): Promise<UserOperationStruct> {
-    return await this.provider.buildUserOperation(data);
-  }
-
-  async buildUserOperationFromTx(
-    tx: RpcTransactionRequest
-  ): Promise<UserOperationStruct> {
-    return await this.provider.buildUserOperationFromTx(tx);
-  }
-
-  async waitForUserOperationTransaction(
-    hash: `0x${string}`
-  ): Promise<`0x${string}`> {
-    return await this.provider.waitForUserOperationTransaction(hash);
-  }
-
-  async getUserOperationByHash(
-    hash: `0x${string}`
-  ): Promise<UserOperationResponse | null> {
-    return await this.provider.getUserOperationByHash(hash);
-  }
-
-  async getUserOperationReceipt(
-    hash: `0x${string}`
-  ): Promise<UserOperationReceipt | null> {
-    return await this.provider.getUserOperationReceipt(hash);
-  }
-
-  async sendTransaction(
-    request: RpcTransactionRequest
-  ): Promise<`0x${string}`> {
-    return await this.provider.sendTransaction(request);
-  }
-
-  async sendTransactions(
-    request: RpcTransactionRequest[]
-  ): Promise<`0x${string}`> {
-    return await this.provider.sendTransactions(request);
-  }
-
-  async request(args: {
-    method: string;
-    params?: any[] | undefined;
-  }): Promise<any> {
-    return await this.provider.request(args);
-  }
-
-  async signMessage(msg: string | Uint8Array): Promise<`0x${string}`> {
-    return await this.provider.signMessage(msg);
-  }
-
-  async signTypedData(params: SignTypedDataParameters): Promise<`0x${string}`> {
-    return await this.provider.signTypedData(params);
-  }
-
-  async signMessageWith6492(msg: string | Uint8Array): Promise<`0x${string}`> {
-    return await this.provider.signMessageWith6492(msg);
-  }
-
-  async signTypedDataWith6492(
-    params: SignTypedDataParams
-  ): Promise<`0x${string}`> {
-    return await this.provider.signTypedDataWith6492(params);
-  }
-
-  async getAddress(): Promise<`0x${string}`> {
-    return this.address ? this.address : await this.provider.getAddress();
-  }
-
-  withPaymasterMiddleware(overrides: {
-    dummyPaymasterDataMiddleware?: PaymasterAndDataMiddleware | undefined;
-    paymasterDataMiddleware?: PaymasterAndDataMiddleware | undefined;
-  }): this {
-    this.provider.withPaymasterMiddleware(overrides);
-    return this;
-  }
-
-  withGasEstimator(override: GasEstimatorMiddleware): this {
-    this.provider.withGasEstimator(override);
-    return this;
-  }
-
-  withFeeDataGetter(override: FeeDataMiddleware): this {
-    this.provider.withFeeDataGetter(override);
-    return this;
-  }
-
-  withCustomMiddleware(override: AccountMiddlewareFn): this {
-    this.provider.withCustomMiddleware(override);
-    return this;
-  }
-
-  connect(
-    fn: (
-      provider: PublicErc4337Client<Transport>
-    ) => BaseSmartContractAccount<Transport>
-  ): this & { account: BaseSmartContractAccount<Transport> } {
-    this.provider.connect(fn);
-    this.account = this.provider.account;
-    return this as this & { account: BaseSmartContractAccount<Transport> };
-  }
-
-  disconnect(): this & { account: undefined } {
-    this.provider.disconnect();
-    this.account = this.provider.account;
-    return this as this & { account: undefined };
-  }
-
   async sendUserOp(
     targetAddress: Address,
     data: Hex,
@@ -173,10 +57,11 @@ export class AlchemyAA extends SmartContractWallet {
         });
       }
 
-      const result: SendUserOperationResult = await this.sendUserOperation({
-        target: targetAddress,
-        data: data,
-      });
+      const result: SendUserOperationResult =
+        await this.provider.sendUserOperation({
+          target: targetAddress,
+          data: data,
+        });
 
       if (result === undefined || result.hash === undefined) {
         return Promise.reject("Transaction failed");
@@ -184,13 +69,13 @@ export class AlchemyAA extends SmartContractWallet {
 
       // wait for user op
       await retry(
-        this.waitForUserOperationTransaction,
+        this.provider.waitForUserOperationTransaction,
         [result.hash as Address],
         10
       );
 
       let userOpReceipt = await retry(
-        this.getUserOperationReceipt,
+        this.provider.getUserOperationReceipt,
         [result.hash as Address],
         10
       );

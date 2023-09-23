@@ -114,10 +114,10 @@ export class LitPasskey extends Passkey {
         }
     }
     async createPkpEthersWallet() {
-        if (this.sessionSig === undefined) {
-            this.sessionSig = await this.getSessionSigs();
-        }
         try {
+            if (this.sessionSig === undefined) {
+                this.sessionSig = await this.getSessionSigs();
+            }
             this.pkpWallet = new PKPEthersWallet({
                 controllerSessionSigs: this.sessionSig,
                 pkpPubKey: this.pkpPublicKey,

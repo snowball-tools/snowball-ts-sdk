@@ -8,30 +8,14 @@ export class Snowball {
     aaProvider;
     auth;
     smartWallet;
-    address;
-    constructor(apiKey, authProvider, aaProvider, chain) {
+    constructor(apiKey, authProvider, chain) {
         this.apiKey = apiKey;
         this.authProvider = authProvider;
-        this.aaProvider = aaProvider;
         this.chain = chain;
         this.auth = this.initAuthProvider(authProvider);
-        this.initAAProvider(aaProvider)
-            .catch((e) => {
-            throw e;
-        })
-            .then((smartWallet) => {
-            this.smartWallet = smartWallet;
-            smartWallet
-                .getAddress()
-                .catch((e) => {
-                throw e;
-            })
-                .then((address) => {
-                this.address = address;
-            });
-        });
     }
     initAuthProvider(authProvider = this.authProvider) {
+        this.authProvider = authProvider;
         switch (authProvider.name) {
             case Auth.lit:
                 return new LitPasskey(this.chain, authProvider);
@@ -41,13 +25,13 @@ export class Snowball {
                 throw new Error("Auth Provider has not been impl yet");
         }
     }
-    async initAAProvider(aaProvider = this.aaProvider) {
+    async initAAProvider(aaProvider) {
+        this.aaProvider = aaProvider;
         switch (aaProvider.name) {
             case AA.alchemy:
                 try {
                     const simpleAccountOwner = await this.auth.getSimpleAccountOwner();
                     this.smartWallet = new AlchemyAA(this.auth, simpleAccountOwner, aaProvider);
-                    this.address = await this.smartWallet.getAddress();
                     return this.smartWallet;
                 }
                 catch (e) {
@@ -58,23 +42,9 @@ export class Snowball {
                 throw new Error("Invalid auth provider");
         }
     }
-    async getSmartWalletAddress() {
-        try {
-            if (this.address) {
-                return this.address;
-            }
-            if (this.smartWallet === undefined) {
-                this.smartWallet = await this.initAAProvider();
-            }
-            return this.address;
-        }
-        catch (e) {
-            throw e;
-        }
-    }
     async sendUserOperation(targetAddress, data, sponsorGas) {
         if (this.smartWallet === undefined) {
-            this.smartWallet = await this.initAAProvider();
+            throw new Error("Smart wallet not initialized");
         }
         return await this.smartWallet.sendUserOp(targetAddress, data, sponsorGas);
     }

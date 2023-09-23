@@ -26,11 +26,10 @@ export interface SnowballAuth {
   getSimpleAccountOwner(): Promise<SimpleSmartAccountOwner>;
 }
 
-export interface SnowballSmartWallet<
-  TTransport extends Transport | FallbackTransport = Transport
-> extends ISmartAccountProvider<TTransport> {
+export interface SnowballSmartWallet {
   aaProvider: AAProvider;
   auth: SnowballAuth;
+  getAddress(): Promise<Address>;
   sendUserOp(
     targetAddress: Address,
     data: Hex,
@@ -42,45 +41,23 @@ export class Snowball {
   private apiKey: string;
   private chain: Chain;
   private authProvider: AuthProvider;
-  private aaProvider: AAProvider;
+  private aaProvider: AAProvider | undefined;
 
   public auth: SnowballAuth;
   public smartWallet: SnowballSmartWallet | undefined;
-  public address: Address | undefined;
 
-  constructor(
-    apiKey: string,
-    authProvider: AuthProvider,
-    aaProvider: AAProvider,
-    chain: Chain
-  ) {
+  constructor(apiKey: string, authProvider: AuthProvider, chain: Chain) {
     this.apiKey = apiKey;
     this.authProvider = authProvider;
-    this.aaProvider = aaProvider;
     this.chain = chain;
 
     this.auth = this.initAuthProvider(authProvider);
-
-    this.initAAProvider(aaProvider)
-      .catch((e) => {
-        throw e;
-      })
-      .then((smartWallet) => {
-        this.smartWallet = smartWallet;
-        smartWallet
-          .getAddress()
-          .catch((e) => {
-            throw e;
-          })
-          .then((address) => {
-            this.address = address;
-          });
-      });
   }
 
   initAuthProvider(
     authProvider: AuthProvider = this.authProvider
   ): SnowballAuth {
+    this.authProvider = authProvider;
     switch (authProvider.name) {
       case Auth.lit:
         return new LitPasskey(this.chain, authProvider);
@@ -91,9 +68,8 @@ export class Snowball {
     }
   }
 
-  async initAAProvider(
-    aaProvider: AAProvider = this.aaProvider
-  ): Promise<SnowballSmartWallet> {
+  async initAAProvider(aaProvider: AAProvider): Promise<SnowballSmartWallet> {
+    this.aaProvider = aaProvider;
     switch (aaProvider.name) {
       case AA.alchemy:
         try {
@@ -103,7 +79,7 @@ export class Snowball {
             simpleAccountOwner,
             aaProvider
           );
-          this.address = await this.smartWallet.getAddress();
+
           return this.smartWallet;
         } catch (e) {
           throw e;
@@ -114,29 +90,13 @@ export class Snowball {
     }
   }
 
-  async getSmartWalletAddress(): Promise<Address> {
-    try {
-      if (this.address) {
-        return this.address;
-      }
-
-      if (this.smartWallet === undefined) {
-        this.smartWallet = await this.initAAProvider();
-      }
-
-      return this.address!;
-    } catch (e) {
-      throw e;
-    }
-  }
-
   async sendUserOperation(
     targetAddress: Address,
     data: Hex,
     sponsorGas: Boolean
   ): Promise<SendUserOperationResult> {
     if (this.smartWallet === undefined) {
-      this.smartWallet = await this.initAAProvider();
+      throw new Error("Smart wallet not initialized");
     }
 
     return await this.smartWallet.sendUserOp(targetAddress, data, sponsorGas);
