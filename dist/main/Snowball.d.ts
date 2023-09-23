@@ -6,7 +6,6 @@ import { type AuthProvider, type AAProvider } from "../helpers/constants";
 export interface SnowballAuth {
     authProvider: AuthProvider;
     chain: Chain;
-    isWebAuthnSupported(): boolean;
     registerPasskey(username: string): Promise<void>;
     authenticatePasskey(): Promise<AuthMethod>;
     getSimpleAccountOwner(): Promise<SimpleSmartAccountOwner>;

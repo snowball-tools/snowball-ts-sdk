@@ -76,13 +76,9 @@ export class LitPasskey extends Passkey {
     async getSessionSigs() {
         try {
             if (this.pkpPublicKey === undefined) {
-                this.pkpPublicKey = await this.fetchPkpsForAuthMethod()
-                    .catch((error) => {
-                    return Promise.reject(`Transaction failed ${error}`);
-                })
-                    .then((pkps) => {
-                    return pkps[0].publicKey;
-                });
+                const pkps = await this.fetchPkpsForAuthMethod();
+                this.pkpPublicKey = pkps[0].publicKey;
+                this.pkpEthAddress = pkps[0].ethAddress;
             }
             await this.litNodeClient.connect();
             const authNeededCallback = async (params) => {

@@ -60,6 +60,9 @@ export class Snowball {
     }
     async getSmartWalletAddress() {
         try {
+            if (this.address) {
+                return this.address;
+            }
             if (this.smartWallet === undefined) {
                 this.smartWallet = await this.initAAProvider();
             }

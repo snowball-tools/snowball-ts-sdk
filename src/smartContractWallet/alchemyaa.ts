@@ -34,7 +34,14 @@ export class AlchemyAA extends SmartContractWallet {
     super(auth, simpleAccountOwner, aaProvider);
     this.auth = auth;
     this.gasPolicyId =
-      this.aaProvider.apiKeys[`alchemyKey-${auth.chain.name.toLowerCase()}-gasPolicyId`];
+      this.aaProvider.apiKeys[
+        `alchemyKey-${auth.chain.name.toLowerCase()}-gasPolicyId`
+      ];
+    console.log(
+      this.aaProvider.apiKeys[
+        `alchemyKey-${auth.chain.name.toLowerCase()}-gasPolicyId`
+      ]
+    );
   }
 
   async sendUserOperation(
@@ -111,7 +118,7 @@ export class AlchemyAA extends SmartContractWallet {
   }
 
   async getAddress(): Promise<`0x${string}`> {
-    return await this.provider.getAddress();
+    return this.address ? this.address : await this.provider.getAddress();
   }
 
   withPaymasterMiddleware(overrides: {
@@ -160,7 +167,7 @@ export class AlchemyAA extends SmartContractWallet {
   ): Promise<SendUserOperationResult> {
     try {
       if (this.gasPolicyId !== undefined && sponsorGas) {
-        this.provider.withAlchemyGasManager({
+        this.provider = this.provider.withAlchemyGasManager({
           policyId: this.gasPolicyId,
           entryPoint: this.auth.chain.entryPointAddress,
         });

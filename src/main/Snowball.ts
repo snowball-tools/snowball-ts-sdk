@@ -20,7 +20,7 @@ import { LitPasskey } from "../Auth/LitPasskey";
 export interface SnowballAuth {
   authProvider: AuthProvider;
   chain: Chain;
-  isWebAuthnSupported(): boolean;
+  // isWebAuthnSupported(): boolean;
   registerPasskey(username: string): Promise<void>;
   authenticatePasskey(): Promise<AuthMethod>;
   getSimpleAccountOwner(): Promise<SimpleSmartAccountOwner>;

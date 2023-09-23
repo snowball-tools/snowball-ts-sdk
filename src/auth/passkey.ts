@@ -13,11 +13,11 @@ export class Passkey implements SnowballAuth {
     this.authProvider = authProvider;
   }
 
-  isWebAuthnSupported(): boolean {
-    return (
-      browserSupportsWebAuthn() && !navigator.userAgent.includes("Firefox")
-    );
-  }
+  // isWebAuthnSupported(): boolean {
+  //   return (
+  //     browserSupportsWebAuthn() && !navigator.userAgent.includes("Firefox")
+  //   );
+  // }
 
   registerPasskey(_username: string): Promise<void> {
     throw new Error("Method not implemented..");

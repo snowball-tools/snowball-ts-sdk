@@ -6,7 +6,6 @@ export declare class Passkey implements SnowballAuth {
     chain: Chain;
     authProvider: AuthProvider;
     constructor(chain: Chain, authProvider: AuthProvider);
-    isWebAuthnSupported(): boolean;
     registerPasskey(_username: string): Promise<void>;
     authenticatePasskey(): Promise<AuthMethod>;
     getSimpleAccountOwner(): Promise<SimpleSmartAccountOwner>;

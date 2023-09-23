@@ -6,9 +6,11 @@ export class Passkey {
         this.chain = chain;
         this.authProvider = authProvider;
     }
-    isWebAuthnSupported() {
-        return (browserSupportsWebAuthn() && !navigator.userAgent.includes("Firefox"));
-    }
+    // isWebAuthnSupported(): boolean {
+    //   return (
+    //     browserSupportsWebAuthn() && !navigator.userAgent.includes("Firefox")
+    //   );
+    // }
     registerPasskey(_username) {
         throw new Error("Method not implemented..");
     }
