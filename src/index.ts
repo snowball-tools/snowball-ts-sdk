@@ -1,24 +1,17 @@
-export {
-  Snowball,
-  type SnowballAuth,
-  type SnowballSmartWallet,
-} from "./main/Snowball";
+export type { Abi } from "abitype";
+
+export { Snowball } from "./snowball";
+
+export { Auth } from "./auth";
+export { SmartWallet } from "./wallet";
 
 export {
-  Auth,
-  AA,
-  type AuthProvider,
-  AuthProviders,
-  AAProviders,
-  type AAProvider,
-} from "./helpers/constants";
-
-export {
-  type Chain,
   CHAINS,
-  DEFAULT_CHAIN,
   viemChain,
   getAlchemyNetwork,
-} from "./helpers/chains";
-
-export { DEFAULT_EXP } from "./helpers/constants";
+  AuthProvider,
+  SmartWalletProvider,
+  AuthProviders,
+  SmartWalletProviders,
+  retry,
+} from "./helpers";

@@ -1,45 +1,45 @@
-export enum Auth {
+export enum AuthProvider {
   lit = "lit",
   turnkey = "turnkey",
   privy = "privy",
 }
 
-export enum AA {
+export enum SmartWalletProvider {
   alchemy = "alchemy",
   fun = "fun",
 }
 
-export interface AuthProvider {
-  name: Auth;
+export interface AuthProviderInfo {
+  name: AuthProvider;
   apiKeys: { [key: string]: string };
 }
-export interface AAProvider {
-  name: AA;
+export interface SmartWalletProviderInfo {
+  name: SmartWalletProvider;
   apiKeys: { [key: string]: string };
 }
 
-export const AAProviders = {
+export const SmartWalletProviders = {
   alchemy: {
-    name: AA.alchemy,
+    name: SmartWalletProvider.alchemy,
     apiKeys: {},
   },
   fun: {
-    name: AA.fun,
+    name: SmartWalletProvider.fun,
     apiKeys: {},
   },
 };
 
 export const AuthProviders = {
   lit: {
-    name: Auth.lit,
+    name: AuthProvider.lit,
     apiKeys: {},
   },
   turnkey: {
-    name: Auth.turnkey,
+    name: AuthProvider.turnkey,
     apiKeys: {},
   },
   privy: {
-    name: Auth.privy,
+    name: AuthProvider.privy,
     apiKeys: {},
   },
 };

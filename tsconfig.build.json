@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Build",
+  "compilerOptions": {
+    "declaration": true,
+    "inlineSources": true,
+    "noEmit": false,
+    "sourceMap": true,
+    "target": "ES2021",
+    "lib": ["ES2022", "DOM"],
+    "types": ["vitest/globals"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "useDefineForClassFields": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "useUnknownInCatchVariables": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "moduleResolution": "node",
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "module": "commonjs"
+  },
+  "exclude": [
+    "node_modules",
+    "**/*/__tests__",
+    "vitest.config.ts",
+    "**/*/node_modules",
+    "**/dist/*"
+  ],
+  "include": ["src"]
+}

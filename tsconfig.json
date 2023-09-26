@@ -1,20 +1,21 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
   "compilerOptions": {
     "declaration": true,
-    "outDir": "dist",
-    "strict": true,
-    "skipLibCheck": true,
     "inlineSources": true,
     "noEmit": false,
     "sourceMap": true,
-    "lib": ["dom", "es2022"],
-    "target": "es2022",
+    "target": "ES2021",
+    "module": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "types": ["vitest/globals"],
     "allowJs": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
@@ -22,8 +23,11 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "useUnknownInCatchVariables": true,
-    "rootDir": "src"
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "moduleResolution": "node",
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["**/*/node_modules"]
 }

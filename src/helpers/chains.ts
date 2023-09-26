@@ -190,8 +190,6 @@ export const CHAINS = {
   },
 };
 
-export const DEFAULT_CHAIN = CHAINS.goerli;
-
 export function viemChain(chain: Chain): ViemChain {
   switch (chain) {
     case CHAINS.ethereum:

@@ -1,1 +1,0 @@
-export { LitAuth } from "./lit";
