@@ -14,9 +14,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SmartWallet = exports.Auth = exports.Snowball = void 0;
-var snowball_1 = require("./snowball");
-Object.defineProperty(exports, "Snowball", { enumerable: true, get: function () { return snowball_1.Snowball; } });
+exports.SmartWallet = exports.Auth = void 0;
+__exportStar(require("./snowball"), exports);
 var auth_1 = require("./auth");
 Object.defineProperty(exports, "Auth", { enumerable: true, get: function () { return auth_1.Auth; } });
 var wallet_1 = require("./wallet");

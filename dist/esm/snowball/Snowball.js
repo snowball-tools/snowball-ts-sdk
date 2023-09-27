@@ -130,5 +130,38 @@ export class Snowball {
             return Promise.reject(`sendUserOperation failed ${error}`);
         }
     }
+    async waitForUserOperationTransaction(hash) {
+        try {
+            if (this.smartWallet === undefined) {
+                this.smartWallet = await this.initSmartWallet();
+            }
+            return await this.smartWallet.waitForUserOperationTransaction(hash);
+        }
+        catch (error) {
+            return Promise.reject(`waitForUserOperationTransaction failed ${error}`);
+        }
+    }
+    async getUserOperationByHash(hash) {
+        try {
+            if (this.smartWallet === undefined) {
+                this.smartWallet = await this.initSmartWallet();
+            }
+            return await this.smartWallet.getUserOperationByHash(hash);
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationByHash failed ${error}`);
+        }
+    }
+    async getUserOperationReceipt(hash) {
+        try {
+            if (this.smartWallet === undefined) {
+                this.smartWallet = await this.initSmartWallet();
+            }
+            return await this.smartWallet.getUserOperationReceipt(hash);
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationReceipt failed ${error}`);
+        }
+    }
 }
 //# sourceMappingURL=Snowball.js.map

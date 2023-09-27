@@ -1,4 +1,9 @@
-import type { Address, Hex } from "@alchemy/aa-core";
+import type {
+  Address,
+  Hex,
+  UserOperationReceipt,
+  UserOperationResponse,
+} from "@alchemy/aa-core";
 import type { Chain } from "../helpers/chains";
 import {
   type SmartWalletProviderInfo,
@@ -10,6 +15,7 @@ import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { SnowballPasskey } from "../auth/Passkey";
 import type { SnowballAuth, SnowballSmartWallet } from "./types";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
+import { Hash } from "viem";
 
 export class Snowball {
   private apiKey: string;
@@ -124,6 +130,39 @@ export class Snowball {
       );
     } catch (error) {
       return Promise.reject(`sendUserOperation failed ${error}`);
+    }
+  }
+
+  async waitForUserOperationTransaction(hash: Hash): Promise<Hash> {
+    try {
+      if (this.smartWallet === undefined) {
+        this.smartWallet = await this.initSmartWallet();
+      }
+      return await this.smartWallet.waitForUserOperationTransaction(hash);
+    } catch (error) {
+      return Promise.reject(`waitForUserOperationTransaction failed ${error}`);
+    }
+  }
+
+  async getUserOperationByHash(hash: Hash): Promise<UserOperationResponse> {
+    try {
+      if (this.smartWallet === undefined) {
+        this.smartWallet = await this.initSmartWallet();
+      }
+      return await this.smartWallet.getUserOperationByHash(hash);
+    } catch (error) {
+      return Promise.reject(`getUserOperationByHash failed ${error}`);
+    }
+  }
+
+  async getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt> {
+    try {
+      if (this.smartWallet === undefined) {
+        this.smartWallet = await this.initSmartWallet();
+      }
+      return await this.smartWallet.getUserOperationReceipt(hash);
+    } catch (error) {
+      return Promise.reject(`getUserOperationReceipt failed ${error}`);
     }
   }
 }

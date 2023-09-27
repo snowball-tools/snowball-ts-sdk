@@ -1,4 +1,4 @@
-export { Snowball } from "./snowball";
+export * from "./snowball";
 
 export { Auth } from "./auth";
 export { SmartWallet } from "./wallet";

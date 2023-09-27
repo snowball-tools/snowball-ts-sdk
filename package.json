@@ -1,5 +1,5 @@
 {
-  "name": "@snowballtools/snowball-ts-auth",
+  "name": "@snowballtools/snowball-ts-sdk",
   "version": "0.1.1",
   "author": "Snowball Tools Inc. <viv@snowballtools.xyz>",
   "type": "module",
@@ -7,28 +7,6 @@
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "typings": "./dist/types/index.d.ts",
-  "sideEffects": false,
-  "browser": {
-    "crypto": false,
-    "stream": false
-  },
-  "files": [
-    "dist",
-    "src/**/*.ts",
-    "!dist/**/*.tsbuildinfo",
-    "!vitest.config.ts",
-    "!.env",
-    "!src/**/*.test.ts",
-    "!src/__tests__/**/*"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "default": "./dist/cjs/index.js"
-    },
-    "./package.json": "./package.json"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -51,7 +29,7 @@
     "url": "https://github.com/snowball-tools/snowball-ts-auth/issues"
   },
   "homepage": "https://github.com/snowball-tools/snowball-ts-auth#readme",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@alchemy/aa-alchemy": "0.1.0-alpha.28",
     "@alchemy/aa-core": "0.1.0-alpha.28",

@@ -1,8 +1,9 @@
-import type { Address, Hex } from "@alchemy/aa-core";
+import type { Address, Hex, UserOperationReceipt, UserOperationResponse } from "@alchemy/aa-core";
 import type { Chain } from "../helpers/chains";
 import { type SmartWalletProviderInfo, type AuthProviderInfo } from "../helpers/constants";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import type { SnowballAuth, SnowballSmartWallet } from "./types";
+import { Hash } from "viem";
 export declare class Snowball {
     private apiKey;
     private chain;
@@ -21,5 +22,8 @@ export declare class Snowball {
     sendUserOperation(targetAddress: Address, data: Hex, sponsorGas: Boolean): Promise<{
         hash: string;
     }>;
+    waitForUserOperationTransaction(hash: Hash): Promise<Hash>;
+    getUserOperationByHash(hash: Hash): Promise<UserOperationResponse>;
+    getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt>;
 }
 //# sourceMappingURL=Snowball.d.ts.map
