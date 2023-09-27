@@ -18,7 +18,6 @@ export declare class LitPasskey implements SnowballPasskeyProvider {
     constructor(chain: Chain, authProvider: AuthProviderInfo);
     registerPasskey(username: string): Promise<void>;
     authenticatePasskey(): Promise<void>;
-    changeChain(chain: Chain): Promise<PKPEthersWallet>;
     fetchPkpsForAuthMethod(): Promise<IRelayPKP[]>;
     getSessionSigs(switchChain?: boolean): Promise<SessionSigsMap>;
     getEthersWallet(): Promise<PKPEthersWallet>;

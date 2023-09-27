@@ -27,9 +27,6 @@ class TurkeyPasskey {
     getEthersWallet() {
         throw new Error("Method not implemented.");
     }
-    changeChain(_chain) {
-        throw new Error("Method not implemented.");
-    }
 }
 exports.TurkeyPasskey = TurkeyPasskey;
 //# sourceMappingURL=TurkeyPasskey.js.map

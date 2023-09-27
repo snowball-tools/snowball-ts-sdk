@@ -4,8 +4,9 @@ import {
   type Hex,
   type SimpleSmartAccountOwner,
   SimpleSmartContractAccount,
+  UserOperationResponse,
+  UserOperationReceipt,
 } from "@alchemy/aa-core";
-import { retry } from "../../helpers/promise";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import type { SmartWalletProviderInfo } from "../../helpers/constants";
 import type { SnowballSmartWalletProvider } from "./types";
@@ -45,6 +46,7 @@ export class AlchemySmartWallet implements SnowballSmartWalletProvider {
         this.smartWalletProviderInfo.apiKeys[
           `alchemyKey-${this.chain.name.toLowerCase()}-gasPolicyId`
         ];
+
       if (gasPolicyId && sponsorGas) {
         this.provider = this.provider.withAlchemyGasManager({
           policyId: gasPolicyId,
@@ -59,23 +61,6 @@ export class AlchemySmartWallet implements SnowballSmartWalletProvider {
         });
 
       if (result === undefined || result.hash === undefined) {
-        return Promise.reject("Transaction failed");
-      }
-
-      // wait for user op
-      await retry(
-        this.provider.waitForUserOperationTransaction,
-        [result.hash as Address],
-        10
-      );
-
-      let userOpReceipt = await retry(
-        this.provider.getUserOperationReceipt,
-        [result.hash as Address],
-        10
-      );
-
-      if (userOpReceipt === null) {
         return Promise.reject("Transaction failed");
       }
 
@@ -104,5 +89,35 @@ export class AlchemySmartWallet implements SnowballSmartWalletProvider {
         })
     );
     return this.provider;
+  }
+
+  async waitForUserOperationTransaction(
+    hash: `0x${string}`
+  ): Promise<`0x${string}`> {
+    try {
+      return await this.provider.waitForUserOperationTransaction(hash);
+    } catch (error) {
+      return Promise.reject(`waitForUserOperationTransaction failed ${error}`);
+    }
+  }
+
+  async getUserOperationByHash(
+    hash: `0x${string}`
+  ): Promise<UserOperationResponse> {
+    try {
+      return await this.provider.getUserOperationByHash(hash);
+    } catch (error) {
+      return Promise.reject(`getUserOperationByHash failed ${error}`);
+    }
+  }
+
+  async getUserOperationReceipt(
+    hash: `0x${string}`
+  ): Promise<UserOperationReceipt> {
+    try {
+      return await this.provider.getUserOperationReceipt(hash);
+    } catch (error) {
+      return Promise.reject(`getUserOperationByHash failed ${error}`);
+    }
   }
 }

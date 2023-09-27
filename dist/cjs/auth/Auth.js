@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Auth = void 0;
 const helpers_1 = require("../helpers");
 const Passkey_1 = require("./Passkey");
-const env_1 = require("../helpers/env");
 class Auth {
-    constructor(chain, authProviderInfo, snowballAPIKey) {
+    constructor(chain, authProviderInfo) {
         Object.defineProperty(this, "authProviderInfo", {
             enumerable: true,
             configurable: true,
@@ -25,12 +24,7 @@ class Auth {
             value: void 0
         });
         this.chain = chain;
-        this.authProviderInfo = {
-            name: authProviderInfo.name,
-            apiKeys: {
-                relayKey: env_1.LIT_RELAY_API_KEY + "_" + snowballAPIKey,
-            },
-        };
+        this.authProviderInfo = authProviderInfo;
         this.authProvider = this.initAuthProvider();
     }
     async register(username) {
@@ -83,14 +77,9 @@ class Auth {
                 return new Passkey_1.SnowballPasskey(this.chain, this.authProviderInfo);
         }
     }
-    async changeChain(chain) {
-        try {
-            this.chain = chain;
-            return await this.authProvider.changeChain(chain);
-        }
-        catch (error) {
-            return Promise.reject(`changeChain failed ${JSON.stringify(error)}`);
-        }
+    changeChain(chain) {
+        this.chain = chain;
+        this.authProvider.changeChain(chain);
     }
 }
 exports.Auth = Auth;

@@ -85,18 +85,6 @@ export class LitPasskey implements SnowballPasskeyProvider {
     }
   }
 
-  async changeChain(chain: Chain): Promise<PKPEthersWallet> {
-    try {
-      this.chain = chain;
-      this.sessionSig = await this.getSessionSigs(true);
-      this.pkpWallet = await this.getEthersWallet();
-
-      return this.pkpWallet;
-    } catch (error) {
-      return Promise.reject(`Changing chain failed ${JSON.stringify(error)}`);
-    }
-  }
-
   async fetchPkpsForAuthMethod(): Promise<IRelayPKP[]> {
     try {
       if (this.authenticated === undefined) {

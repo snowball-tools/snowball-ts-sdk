@@ -104,17 +104,6 @@ class LitPasskey {
             return Promise.reject(`Authentication failed ${JSON.stringify(error)}`);
         }
     }
-    async changeChain(chain) {
-        try {
-            this.chain = chain;
-            this.sessionSig = await this.getSessionSigs(true);
-            this.pkpWallet = await this.getEthersWallet();
-            return this.pkpWallet;
-        }
-        catch (error) {
-            return Promise.reject(`Changing chain failed ${JSON.stringify(error)}`);
-        }
-    }
     async fetchPkpsForAuthMethod() {
         try {
             if (this.authenticated === undefined) {

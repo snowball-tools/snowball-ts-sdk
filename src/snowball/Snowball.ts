@@ -3,13 +3,16 @@ import type { Chain } from "../helpers/chains";
 import {
   type SmartWalletProviderInfo,
   type AuthProviderInfo,
+  AuthProvider,
 } from "../helpers/constants";
 import { SmartWallet } from "../wallet";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { SnowballPasskey } from "../auth/Passkey";
 import type { SnowballAuth, SnowballSmartWallet } from "./types";
+import { LIT_RELAY_API_KEY } from "../helpers/env";
 
 export class Snowball {
+  private apiKey: string;
   private chain: Chain;
   private authProviderInfo: AuthProviderInfo;
   private smartWalletProviderInfo: SmartWalletProviderInfo;
@@ -19,13 +22,22 @@ export class Snowball {
   public ethersWallet: PKPEthersWallet | undefined;
 
   constructor(
-    _apiKey: string,
+    apiKey: string,
     chain: Chain,
     authProviderInfo: AuthProviderInfo,
     smartWalletProviderInfo: SmartWalletProviderInfo
   ) {
+    this.apiKey = apiKey;
     this.chain = chain;
-    this.authProviderInfo = authProviderInfo;
+    this.authProviderInfo =
+      authProviderInfo.name == AuthProvider.lit
+        ? {
+            name: authProviderInfo.name,
+            apiKeys: {
+              relayKey: LIT_RELAY_API_KEY + "_" + this.apiKey,
+            },
+          }
+        : authProviderInfo;
     this.smartWalletProviderInfo = smartWalletProviderInfo;
 
     this.auth = new SnowballPasskey(this.chain, this.authProviderInfo);
@@ -55,14 +67,13 @@ export class Snowball {
     }
   }
 
-  async changeChain(chain: Chain): Promise<void> {
+  async changeChain(chain: Chain) {
     try {
       if (this.smartWallet === undefined) {
         this.smartWallet = await this.initSmartWallet();
       }
       this.chain = chain;
-      const ethersWallet = await this.auth.changeChain(chain);
-      await this.smartWallet.changeChain(ethersWallet);
+      this.smartWallet.changeChain();
     } catch (error) {
       return Promise.reject(`changeChain failed ${error}`);
     }

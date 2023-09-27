@@ -51,7 +51,7 @@
     "url": "https://github.com/snowball-tools/snowball-ts-auth/issues"
   },
   "homepage": "https://github.com/snowball-tools/snowball-ts-auth#readme",
-  "private": false,
+  "private": true,
   "dependencies": {
     "@alchemy/aa-alchemy": "0.1.0-alpha.28",
     "@alchemy/aa-core": "0.1.0-alpha.28",

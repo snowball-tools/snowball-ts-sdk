@@ -24,6 +24,15 @@ class FunSmartWallet {
     changeChain(_chain) {
         throw new Error("Method not implemented.");
     }
+    async waitForUserOperationTransaction(_hash) {
+        throw new Error("Method not implemented.");
+    }
+    async getUserOperationByHash(_hash) {
+        throw new Error("Method not implemented.");
+    }
+    async getUserOperationReceipt(_hash) {
+        throw new Error("Method not implemented.");
+    }
 }
 exports.FunSmartWallet = FunSmartWallet;
 //# sourceMappingURL=FunSmartWallet.js.map

@@ -86,12 +86,11 @@ class SmartWallet {
             throw new Error(`Error getting address ${JSON.stringify(error)}`);
         }
     }
-    async changeChain(ethersWallet) {
+    async changeChain() {
         if (this.smartWalletProvider === undefined) {
             this.smartWalletProvider = await this.initSmartWalletProvider();
         }
         try {
-            this.ethersWallet = ethersWallet;
             this.simpleAccountOwner = await this.getSimpleAccountOwner();
             this.smartWalletProvider.changeChain(this.auth.chain);
         }
@@ -131,6 +130,57 @@ class SmartWallet {
         }
         catch (error) {
             return Promise.reject(`initSmartWalletProvider failed ${JSON.stringify(error)}`);
+        }
+    }
+    async waitForUserOperationTransaction(hash) {
+        try {
+            if (this.smartWalletProvider === undefined) {
+                this.smartWalletProvider = await this.initSmartWalletProvider();
+            }
+            switch (this.smartWalletProviderInfo.name) {
+                case helpers_1.SmartWalletProvider.alchemy:
+                    return await this.smartWalletProvider.waitForUserOperationTransaction(hash);
+                case helpers_1.SmartWalletProvider.fun:
+                default:
+                    throw new Error("Auth Provider has not been impl yet");
+            }
+        }
+        catch (error) {
+            return Promise.reject(`waitForUserOperationTransaction failed ${JSON.stringify(error)}`);
+        }
+    }
+    async getUserOperationByHash(hash) {
+        try {
+            if (this.smartWalletProvider === undefined) {
+                this.smartWalletProvider = await this.initSmartWalletProvider();
+            }
+            switch (this.smartWalletProviderInfo.name) {
+                case helpers_1.SmartWalletProvider.alchemy:
+                    return await this.smartWalletProvider.getUserOperationByHash(hash);
+                case helpers_1.SmartWalletProvider.fun:
+                default:
+                    throw new Error("Auth Provider has not been impl yet");
+            }
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationByHash failed ${JSON.stringify(error)}`);
+        }
+    }
+    async getUserOperationReceipt(hash) {
+        try {
+            if (this.smartWalletProvider === undefined) {
+                this.smartWalletProvider = await this.initSmartWalletProvider();
+            }
+            switch (this.smartWalletProviderInfo.name) {
+                case helpers_1.SmartWalletProvider.alchemy:
+                    return await this.smartWalletProvider.getUserOperationReceipt(hash);
+                case helpers_1.SmartWalletProvider.fun:
+                default:
+                    throw new Error("Auth Provider has not been impl yet");
+            }
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationByHash failed ${JSON.stringify(error)}`);
         }
     }
 }

@@ -6,11 +6,11 @@ export declare class Auth implements SnowballAuth {
     authProviderInfo: AuthProviderInfo;
     chain: Chain;
     authProvider: SnowballAuth;
-    constructor(chain: Chain, authProviderInfo: AuthProviderInfo, snowballAPIKey: string);
+    constructor(chain: Chain, authProviderInfo: AuthProviderInfo);
     register(username: string): Promise<void>;
     authenticate(): Promise<void>;
     getEthersWallet(): Promise<PKPEthersWallet>;
     initAuthProvider(): SnowballAuth;
-    changeChain(chain: Chain): Promise<PKPEthersWallet>;
+    changeChain(chain: Chain): void;
 }
 //# sourceMappingURL=Auth.d.ts.map

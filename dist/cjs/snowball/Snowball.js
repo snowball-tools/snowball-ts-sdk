@@ -1,10 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Snowball = void 0;
+const constants_1 = require("../helpers/constants");
 const wallet_1 = require("../wallet");
 const Passkey_1 = require("../auth/Passkey");
+const env_1 = require("../helpers/env");
 class Snowball {
-    constructor(_apiKey, chain, authProviderInfo, smartWalletProviderInfo) {
+    constructor(apiKey, chain, authProviderInfo, smartWalletProviderInfo) {
+        Object.defineProperty(this, "apiKey", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "chain", {
             enumerable: true,
             configurable: true,
@@ -41,8 +49,17 @@ class Snowball {
             writable: true,
             value: void 0
         });
+        this.apiKey = apiKey;
         this.chain = chain;
-        this.authProviderInfo = authProviderInfo;
+        this.authProviderInfo =
+            authProviderInfo.name == constants_1.AuthProvider.lit
+                ? {
+                    name: authProviderInfo.name,
+                    apiKeys: {
+                        relayKey: env_1.LIT_RELAY_API_KEY + "_" + this.apiKey,
+                    },
+                }
+                : authProviderInfo;
         this.smartWalletProviderInfo = smartWalletProviderInfo;
         this.auth = new Passkey_1.SnowballPasskey(this.chain, this.authProviderInfo);
     }
@@ -76,8 +93,7 @@ class Snowball {
                 this.smartWallet = await this.initSmartWallet();
             }
             this.chain = chain;
-            const ethersWallet = await this.auth.changeChain(chain);
-            await this.smartWallet.changeChain(ethersWallet);
+            this.smartWallet.changeChain();
         }
         catch (error) {
             return Promise.reject(`changeChain failed ${error}`);

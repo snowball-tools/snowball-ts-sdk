@@ -1,8 +1,7 @@
 import { AuthProvider } from "../helpers";
 import { SnowballPasskey } from "./Passkey";
-import { LIT_RELAY_API_KEY } from "../helpers/env";
 export class Auth {
-    constructor(chain, authProviderInfo, snowballAPIKey) {
+    constructor(chain, authProviderInfo) {
         Object.defineProperty(this, "authProviderInfo", {
             enumerable: true,
             configurable: true,
@@ -22,12 +21,7 @@ export class Auth {
             value: void 0
         });
         this.chain = chain;
-        this.authProviderInfo = {
-            name: authProviderInfo.name,
-            apiKeys: {
-                relayKey: LIT_RELAY_API_KEY + "_" + snowballAPIKey,
-            },
-        };
+        this.authProviderInfo = authProviderInfo;
         this.authProvider = this.initAuthProvider();
     }
     async register(username) {
@@ -80,14 +74,9 @@ export class Auth {
                 return new SnowballPasskey(this.chain, this.authProviderInfo);
         }
     }
-    async changeChain(chain) {
-        try {
-            this.chain = chain;
-            return await this.authProvider.changeChain(chain);
-        }
-        catch (error) {
-            return Promise.reject(`changeChain failed ${JSON.stringify(error)}`);
-        }
+    changeChain(chain) {
+        this.chain = chain;
+        this.authProvider.changeChain(chain);
     }
 }
 //# sourceMappingURL=Auth.js.map

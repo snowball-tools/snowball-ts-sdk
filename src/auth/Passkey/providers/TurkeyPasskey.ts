@@ -20,7 +20,4 @@ export class TurkeyPasskey implements SnowballPasskeyProvider {
   getEthersWallet(): Promise<PKPEthersWallet> {
     throw new Error("Method not implemented.");
   }
-  changeChain(_chain: Chain): Promise<PKPEthersWallet> {
-    throw new Error("Method not implemented.");
-  }
 }

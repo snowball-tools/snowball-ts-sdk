@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AlchemySmartWallet = void 0;
 const aa_core_1 = require("@alchemy/aa-core");
-const promise_1 = require("../../helpers/promise");
 const aa_alchemy_1 = require("@alchemy/aa-alchemy");
 const chains_1 = require("../../helpers/chains");
 class AlchemySmartWallet {
@@ -56,11 +55,6 @@ class AlchemySmartWallet {
             if (result === undefined || result.hash === undefined) {
                 return Promise.reject("Transaction failed");
             }
-            await (0, promise_1.retry)(this.provider.waitForUserOperationTransaction, [result.hash], 10);
-            let userOpReceipt = await (0, promise_1.retry)(this.provider.getUserOperationReceipt, [result.hash], 10);
-            if (userOpReceipt === null) {
-                return Promise.reject("Transaction failed");
-            }
             return result;
         }
         catch (error) {
@@ -80,6 +74,30 @@ class AlchemySmartWallet {
             rpcClient,
         }));
         return this.provider;
+    }
+    async waitForUserOperationTransaction(hash) {
+        try {
+            return await this.provider.waitForUserOperationTransaction(hash);
+        }
+        catch (error) {
+            return Promise.reject(`waitForUserOperationTransaction failed ${error}`);
+        }
+    }
+    async getUserOperationByHash(hash) {
+        try {
+            return await this.provider.getUserOperationByHash(hash);
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationByHash failed ${error}`);
+        }
+    }
+    async getUserOperationReceipt(hash) {
+        try {
+            return await this.provider.getUserOperationReceipt(hash);
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationByHash failed ${error}`);
+        }
     }
 }
 exports.AlchemySmartWallet = AlchemySmartWallet;

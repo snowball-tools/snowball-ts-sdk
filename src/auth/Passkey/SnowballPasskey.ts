@@ -6,7 +6,7 @@ import type { SnowballAuth } from "../../snowball";
 import { LitPasskey, type SnowballPasskeyProvider } from "./providers";
 
 export class SnowballPasskey implements SnowballAuth {
-  public chain: Chain;
+  chain: Chain;
   public authProviderInfo: AuthProviderInfo;
   public passkeyProvider: SnowballPasskeyProvider;
 
@@ -76,15 +76,8 @@ export class SnowballPasskey implements SnowballAuth {
     }
   }
 
-  async changeChain(chain: Chain): Promise<PKPEthersWallet> {
-    try {
-      this.chain = chain;
-      return await this.passkeyProvider.changeChain(chain);
-    } catch (e) {
-      console.log(
-        `Error changing chain to ${chain.name}. ${JSON.stringify(e)}}`
-      );
-      throw Promise.reject(e);
-    }
+  changeChain(chain: Chain) {
+    this.chain = chain;
+    this.passkeyProvider.chain = chain;
   }
 }

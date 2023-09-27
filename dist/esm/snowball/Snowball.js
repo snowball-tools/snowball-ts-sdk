@@ -1,7 +1,15 @@
+import { AuthProvider, } from "../helpers/constants";
 import { SmartWallet } from "../wallet";
 import { SnowballPasskey } from "../auth/Passkey";
+import { LIT_RELAY_API_KEY } from "../helpers/env";
 export class Snowball {
-    constructor(_apiKey, chain, authProviderInfo, smartWalletProviderInfo) {
+    constructor(apiKey, chain, authProviderInfo, smartWalletProviderInfo) {
+        Object.defineProperty(this, "apiKey", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "chain", {
             enumerable: true,
             configurable: true,
@@ -38,8 +46,17 @@ export class Snowball {
             writable: true,
             value: void 0
         });
+        this.apiKey = apiKey;
         this.chain = chain;
-        this.authProviderInfo = authProviderInfo;
+        this.authProviderInfo =
+            authProviderInfo.name == AuthProvider.lit
+                ? {
+                    name: authProviderInfo.name,
+                    apiKeys: {
+                        relayKey: LIT_RELAY_API_KEY + "_" + this.apiKey,
+                    },
+                }
+                : authProviderInfo;
         this.smartWalletProviderInfo = smartWalletProviderInfo;
         this.auth = new SnowballPasskey(this.chain, this.authProviderInfo);
     }
@@ -73,8 +90,7 @@ export class Snowball {
                 this.smartWallet = await this.initSmartWallet();
             }
             this.chain = chain;
-            const ethersWallet = await this.auth.changeChain(chain);
-            await this.smartWallet.changeChain(ethersWallet);
+            this.smartWallet.changeChain();
         }
         catch (error) {
             return Promise.reject(`changeChain failed ${error}`);

@@ -3,25 +3,15 @@ import type { Chain } from "../helpers/chains";
 import { type SnowballAuth } from "../snowball";
 import { AuthProvider, type AuthProviderInfo } from "../helpers";
 import { SnowballPasskey } from "./Passkey";
-import { LIT_RELAY_API_KEY } from "../helpers/env";
 
 export class Auth implements SnowballAuth {
   authProviderInfo: AuthProviderInfo;
   chain: Chain;
   authProvider: SnowballAuth;
 
-  constructor(
-    chain: Chain,
-    authProviderInfo: AuthProviderInfo,
-    snowballAPIKey: string
-  ) {
+  constructor(chain: Chain, authProviderInfo: AuthProviderInfo) {
     this.chain = chain;
-    this.authProviderInfo = {
-      name: authProviderInfo.name,
-      apiKeys: {
-        relayKey: LIT_RELAY_API_KEY + "_" + snowballAPIKey,
-      },
-    };
+    this.authProviderInfo = authProviderInfo;
 
     this.authProvider = this.initAuthProvider();
   }
@@ -77,12 +67,8 @@ export class Auth implements SnowballAuth {
     }
   }
 
-  async changeChain(chain: Chain): Promise<PKPEthersWallet> {
-    try {
-      this.chain = chain;
-      return await this.authProvider.changeChain(chain);
-    } catch (error) {
-      return Promise.reject(`changeChain failed ${JSON.stringify(error)}`);
-    }
+  changeChain(chain: Chain) {
+    this.chain = chain;
+    this.authProvider.changeChain(chain);
   }
 }

@@ -1,5 +1,4 @@
 import { SimpleSmartContractAccount, } from "@alchemy/aa-core";
-import { retry } from "../../helpers/promise";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { getAlchemyChain } from "../../helpers/chains";
 export class AlchemySmartWallet {
@@ -53,11 +52,6 @@ export class AlchemySmartWallet {
             if (result === undefined || result.hash === undefined) {
                 return Promise.reject("Transaction failed");
             }
-            await retry(this.provider.waitForUserOperationTransaction, [result.hash], 10);
-            let userOpReceipt = await retry(this.provider.getUserOperationReceipt, [result.hash], 10);
-            if (userOpReceipt === null) {
-                return Promise.reject("Transaction failed");
-            }
             return result;
         }
         catch (error) {
@@ -77,6 +71,30 @@ export class AlchemySmartWallet {
             rpcClient,
         }));
         return this.provider;
+    }
+    async waitForUserOperationTransaction(hash) {
+        try {
+            return await this.provider.waitForUserOperationTransaction(hash);
+        }
+        catch (error) {
+            return Promise.reject(`waitForUserOperationTransaction failed ${error}`);
+        }
+    }
+    async getUserOperationByHash(hash) {
+        try {
+            return await this.provider.getUserOperationByHash(hash);
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationByHash failed ${error}`);
+        }
+    }
+    async getUserOperationReceipt(hash) {
+        try {
+            return await this.provider.getUserOperationReceipt(hash);
+        }
+        catch (error) {
+            return Promise.reject(`getUserOperationByHash failed ${error}`);
+        }
     }
 }
 //# sourceMappingURL=AlchemySmartWallet.js.map

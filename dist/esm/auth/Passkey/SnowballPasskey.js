@@ -83,15 +83,9 @@ export class SnowballPasskey {
                 throw new Error("Auth Provider has not been impl yet");
         }
     }
-    async changeChain(chain) {
-        try {
-            this.chain = chain;
-            return await this.passkeyProvider.changeChain(chain);
-        }
-        catch (e) {
-            console.log(`Error changing chain to ${chain}. ${JSON.stringify(e)}}`);
-            throw Promise.reject(e);
-        }
+    changeChain(chain) {
+        this.chain = chain;
+        this.passkeyProvider.chain = chain;
     }
 }
 //# sourceMappingURL=SnowballPasskey.js.map

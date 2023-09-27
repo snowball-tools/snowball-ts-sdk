@@ -10,5 +10,3 @@ export {
 } from "./constants";
 
 export { type Chain, CHAINS, viemChain, getAlchemyNetwork } from "./chains";
-
-export { retry } from "./promise";
