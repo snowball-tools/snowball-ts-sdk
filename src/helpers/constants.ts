@@ -1,7 +1,18 @@
+export enum AlchemySmartWalletProviderKey {
+  goerli = "alchemyKey-goerli",
+  sepolia = "alchemyKey-sepolia",
+  goerli_gasPolicyId = "alchemyKey-goerli-gasPolicyId",
+  sepolia_gasPolicyId = "alchemyKey-sepolia-gasPolicyId",
+}
+
+export enum FunSmartWalletProviderKey {
+  key = "funKey",
+  gasPolicyId = "funKey-gasPolicyId",
+}
+
 export enum AuthProvider {
   lit = "lit",
   turnkey = "turnkey",
-  privy = "privy",
 }
 
 export enum SmartWalletProvider {
@@ -11,7 +22,7 @@ export enum SmartWalletProvider {
 
 export interface AuthProviderInfo {
   name: AuthProvider;
-  apiKeys: { [key: string]: string };
+  apiKeys?: { [key: string]: string };
 }
 export interface SmartWalletProviderInfo {
   name: SmartWalletProvider;
@@ -36,10 +47,6 @@ export const AuthProviders = {
   },
   turnkey: {
     name: AuthProvider.turnkey,
-    apiKeys: {},
-  },
-  privy: {
-    name: AuthProvider.privy,
     apiKeys: {},
   },
 };

@@ -44,26 +44,8 @@ class SmartWallet {
         this.auth = auth;
         this.smartWalletProviderInfo = smartWalletProviderInfo;
         this.ethersWallet = ethersWallet;
-        this.getSimpleAccountOwner()
-            .then((owner) => {
-            this.simpleAccountOwner = owner;
-            owner
-                .getAddress()
-                .catch((error) => {
-                console.log(error);
-            })
-                .then(() => {
-                this.smartWalletProvider = this.initSmartWalletProvider(owner);
-            });
-        })
-            .catch((error) => {
-            console.log(error);
-        });
     }
     async getSimpleAccountOwner() {
-        if (this.simpleAccountOwner) {
-            return this.simpleAccountOwner;
-        }
         try {
             const owner = {
                 signMessage: async (msg) => {
@@ -86,7 +68,7 @@ class SmartWallet {
             return owner;
         }
         catch (error) {
-            return Promise.reject(`Get Simple Account Owner failed ${error}`);
+            return Promise.reject(`Get Simple Account Owner failed ${JSON.stringify(error)}`);
         }
     }
     async getAddress() {
@@ -94,30 +76,61 @@ class SmartWallet {
             return this.address;
         }
         try {
-            const owner = await this.getSimpleAccountOwner();
+            const owner = this.simpleAccountOwner
+                ? this.simpleAccountOwner
+                : await this.getSimpleAccountOwner();
             this.address = await owner.getAddress();
             return this.address;
         }
-        catch (e) {
-            throw new Error("Error getting address");
+        catch (error) {
+            throw new Error(`Error getting address ${JSON.stringify(error)}`);
+        }
+    }
+    async changeChain(ethersWallet) {
+        if (this.smartWalletProvider === undefined) {
+            this.smartWalletProvider = await this.initSmartWalletProvider();
+        }
+        try {
+            this.ethersWallet = ethersWallet;
+            this.simpleAccountOwner = await this.getSimpleAccountOwner();
+            this.smartWalletProvider.changeChain(this.auth.chain);
+        }
+        catch (error) {
+            return Promise.reject(`changeChain failed ${JSON.stringify(error)}`);
         }
     }
     async sendUserOperation(targetAddress, data, sponsorGas) {
-        switch (this.smartWalletProviderInfo.name) {
-            case helpers_1.SmartWalletProvider.alchemy:
-                return this.sendUserOperation(targetAddress, data, sponsorGas);
-            case helpers_1.SmartWalletProvider.fun:
-            default:
-                throw new Error("Auth Provider has not been impl yet");
+        try {
+            if (this.smartWalletProvider === undefined) {
+                this.smartWalletProvider = await this.initSmartWalletProvider();
+            }
+            switch (this.smartWalletProviderInfo.name) {
+                case helpers_1.SmartWalletProvider.alchemy:
+                    return await this.smartWalletProvider.sendUserOperation(targetAddress, data, sponsorGas);
+                case helpers_1.SmartWalletProvider.fun:
+                default:
+                    throw new Error("Auth Provider has not been impl yet");
+            }
+        }
+        catch (error) {
+            return Promise.reject(`sendUserOperation failed ${JSON.stringify(error)}`);
         }
     }
-    initSmartWalletProvider(simpleAccountOwner) {
-        switch (this.smartWalletProviderInfo.name) {
-            case helpers_1.SmartWalletProvider.alchemy:
-                return new AlchemySmartWallet_1.AlchemySmartWallet(simpleAccountOwner, this.smartWalletProviderInfo, this.auth.chain);
-            case helpers_1.SmartWalletProvider.fun:
-            default:
-                throw new Error("Auth Provider has not been impl yet");
+    async initSmartWalletProvider() {
+        try {
+            if (this.simpleAccountOwner === undefined) {
+                this.simpleAccountOwner = await this.getSimpleAccountOwner();
+            }
+            switch (this.smartWalletProviderInfo.name) {
+                case helpers_1.SmartWalletProvider.alchemy:
+                    return new AlchemySmartWallet_1.AlchemySmartWallet(this.simpleAccountOwner, this.smartWalletProviderInfo, this.auth.chain);
+                case helpers_1.SmartWalletProvider.fun:
+                default:
+                    throw new Error("Auth Provider has not been impl yet");
+            }
+        }
+        catch (error) {
+            return Promise.reject(`initSmartWalletProvider failed ${JSON.stringify(error)}`);
         }
     }
 }

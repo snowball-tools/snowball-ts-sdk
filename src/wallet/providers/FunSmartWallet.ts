@@ -1,6 +1,6 @@
 import type { Address } from "viem";
 import type { Chain, SmartWalletProviderInfo } from "../../helpers";
-import type { SnowballSmartWalletProvider } from "./SnowballSmartWalletProvider";
+import type { SnowballSmartWalletProvider } from "./types";
 
 export class FunSmartWallet implements SnowballSmartWalletProvider {
   chain: Chain;
@@ -16,6 +16,10 @@ export class FunSmartWallet implements SnowballSmartWalletProvider {
     _data: Address,
     _sponsorGas: Boolean
   ): Promise<{ hash: string }> {
+    throw new Error("Method not implemented.");
+  }
+
+  changeChain(_chain: Chain) {
     throw new Error("Method not implemented.");
   }
 }

@@ -1,4 +1,3 @@
-import {} from "../helpers/constants";
 import { SmartWallet } from "../wallet";
 import { SnowballPasskey } from "../auth/Passkey";
 export class Snowball {
@@ -43,13 +42,22 @@ export class Snowball {
         this.authProviderInfo = authProviderInfo;
         this.smartWalletProviderInfo = smartWalletProviderInfo;
         this.auth = new SnowballPasskey(this.chain, this.authProviderInfo);
-        this.getEthersWallet()
-            .then((ethersWallet) => {
-            this.smartWallet = new SmartWallet(ethersWallet, this.auth, this.smartWalletProviderInfo);
-        })
-            .catch((error) => {
-            console.log(error);
-        });
+    }
+    async register(username) {
+        try {
+            return await this.auth.register(username);
+        }
+        catch (error) {
+            return Promise.reject(`register failed ${error}`);
+        }
+    }
+    async authenticate() {
+        try {
+            return await this.auth.authenticate();
+        }
+        catch (error) {
+            return Promise.reject(`authenticate failed ${error}`);
+        }
     }
     async getEthersWallet() {
         try {
@@ -61,8 +69,12 @@ export class Snowball {
     }
     async changeChain(chain) {
         try {
+            if (this.smartWallet === undefined) {
+                this.smartWallet = await this.initSmartWallet();
+            }
             this.chain = chain;
-            this.auth.chain = chain;
+            const ethersWallet = await this.auth.changeChain(chain);
+            await this.smartWallet.changeChain(ethersWallet);
         }
         catch (error) {
             return Promise.reject(`changeChain failed ${error}`);
@@ -71,8 +83,7 @@ export class Snowball {
     async getAddress() {
         try {
             if (this.smartWallet === undefined) {
-                this.ethersWallet = await this.getEthersWallet();
-                this.smartWallet = new SmartWallet(this.ethersWallet, this.auth, this.smartWalletProviderInfo);
+                this.smartWallet = await this.initSmartWallet();
             }
             return await this.smartWallet.getAddress();
         }
@@ -80,11 +91,22 @@ export class Snowball {
             return Promise.reject(`getAddress failed ${error}`);
         }
     }
+    async initSmartWallet() {
+        try {
+            if (this.ethersWallet === undefined) {
+                this.ethersWallet = await this.getEthersWallet();
+            }
+            this.smartWallet = new SmartWallet(this.ethersWallet, this.auth, this.smartWalletProviderInfo);
+            return this.smartWallet;
+        }
+        catch (error) {
+            return Promise.reject(`initSmartWallet failed ${error}`);
+        }
+    }
     async sendUserOperation(targetAddress, data, sponsorGas) {
         try {
             if (this.smartWallet === undefined) {
-                this.ethersWallet = await this.getEthersWallet();
-                this.smartWallet = new SmartWallet(this.ethersWallet, this.auth, this.smartWalletProviderInfo);
+                this.smartWallet = await this.initSmartWallet();
             }
             return await this.smartWallet.sendUserOperation(targetAddress, data, sponsorGas);
         }

@@ -1,6 +1,7 @@
 import type { Address } from "viem";
 import { type Chain as ViemChain } from "viem/chains";
 import { Network } from "alchemy-sdk";
+import { chains } from "@alchemy/aa-core";
 export interface Chain {
     chainId: number;
     name: string;
@@ -187,3 +188,4 @@ export declare const CHAINS: {
 };
 export declare function viemChain(chain: Chain): ViemChain;
 export declare function getAlchemyNetwork(chain: Chain): Network;
+export declare function getAlchemyChain(chain: Chain): chains.Chain;

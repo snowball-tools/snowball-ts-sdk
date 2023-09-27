@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/snowball/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,QAAQ,EACR,KAAK,YAAY,EACjB,KAAK,mBAAmB,GACzB,MAAM,sBAAsB,CAAC"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/snowball/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,YAAY,CAAC;AACtC,cAAc,SAAS,CAAC"}

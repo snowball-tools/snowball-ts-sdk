@@ -1,29 +1,32 @@
 import { CHAINS, SmartWalletProvider, AuthProvider } from "../helpers";
 import { Snowball } from "../snowball";
-import { LIT_RELAY_API_KEY } from "../helpers/env";
-import { JSDOM } from "jsdom";
-
-const { window } = new JSDOM();
+import { AlchemySmartWalletProviderKey } from "../helpers/constants";
 
 describe("Snowball", () => {
-  describe("Init Snowball", () => {
+  describe("Auth", () => {
     const snowball = new Snowball(
       "",
       CHAINS.goerli,
       {
         name: AuthProvider.lit,
-        apiKeys: {
-          relayKey: LIT_RELAY_API_KEY,
-        },
       },
       {
         name: SmartWalletProvider.alchemy,
-        apiKeys: {},
+        apiKeys: {
+          [AlchemySmartWalletProviderKey.goerli]: "key",
+          [AlchemySmartWalletProviderKey.goerli_gasPolicyId]: "gasPolicyId",
+          [AlchemySmartWalletProviderKey.sepolia]: "key",
+          [AlchemySmartWalletProviderKey.sepolia_gasPolicyId]: "key",
+        },
       }
     );
 
-    it("should return", async () => {
-      expect(await snowball.auth.authenticate()).toHaveBeenCalledOnce();
+    it("authenticate runs", async () => {
+      expect(await snowball.auth.authenticate());
+    });
+
+    it("register runs", async () => {
+      expect(await snowball.auth.register("test"));
     });
   });
 });

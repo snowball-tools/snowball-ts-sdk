@@ -1,15 +1,9 @@
 import { SimpleSmartContractAccount, } from "@alchemy/aa-core";
 import { retry } from "../../helpers/promise";
-import { viemChain } from "../../helpers/chains";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
+import { getAlchemyChain } from "../../helpers/chains";
 export class AlchemySmartWallet {
     constructor(simpleAccountOwner, smartWalletProviderInfo, chain) {
-        Object.defineProperty(this, "gasPolicyId", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
         Object.defineProperty(this, "provider", {
             enumerable: true,
             configurable: true,
@@ -28,27 +22,27 @@ export class AlchemySmartWallet {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "simpleAccountOwner", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.chain = chain;
         this.smartWalletProviderInfo = smartWalletProviderInfo;
-        this.gasPolicyId =
-            this.smartWalletProviderInfo.apiKeys[`alchemyKey-${chain.name.toLowerCase()}-gasPolicyId`];
-        this.provider = new AlchemyProvider({
-            chain: viemChain(chain),
-            entryPointAddress: chain.entryPointAddress,
-            apiKey: smartWalletProviderInfo.apiKeys[`alchemyKey-${chain.name.toLowerCase()}`],
-        }).connect((rpcClient) => new SimpleSmartContractAccount({
-            owner: simpleAccountOwner,
-            entryPointAddress: chain.entryPointAddress,
-            chain: viemChain(chain),
-            factoryAddress: chain.factoryAddress,
-            rpcClient,
-        }));
+        this.simpleAccountOwner = simpleAccountOwner;
+        this.provider = this.initAlchemyProvider();
+    }
+    changeChain(chain) {
+        this.chain = chain;
+        this.provider = this.initAlchemyProvider();
     }
     async sendUserOperation(targetAddress, data, sponsorGas) {
         try {
-            if (this.gasPolicyId !== undefined && sponsorGas) {
+            const gasPolicyId = this.smartWalletProviderInfo.apiKeys[`alchemyKey-${this.chain.name.toLowerCase()}-gasPolicyId`];
+            if (gasPolicyId && sponsorGas) {
                 this.provider = this.provider.withAlchemyGasManager({
-                    policyId: this.gasPolicyId,
+                    policyId: gasPolicyId,
                     entryPoint: this.chain.entryPointAddress,
                 });
             }
@@ -67,8 +61,22 @@ export class AlchemySmartWallet {
             return result;
         }
         catch (error) {
-            return Promise.reject(`Transaction failed ${error}`);
+            return Promise.reject(`Transaction failed ${JSON.stringify(error)}`);
         }
+    }
+    initAlchemyProvider() {
+        this.provider = new AlchemyProvider({
+            chain: this.chain.chainId,
+            entryPointAddress: this.chain.entryPointAddress,
+            apiKey: this.smartWalletProviderInfo.apiKeys[`alchemyKey-${this.chain.name.toLowerCase()}`],
+        }).connect((rpcClient) => new SimpleSmartContractAccount({
+            owner: this.simpleAccountOwner,
+            entryPointAddress: this.chain.entryPointAddress,
+            chain: getAlchemyChain(this.chain),
+            factoryAddress: this.chain.factoryAddress,
+            rpcClient,
+        }));
+        return this.provider;
     }
 }
 //# sourceMappingURL=AlchemySmartWallet.js.map

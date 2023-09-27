@@ -1,2 +1,3 @@
-export { Snowball, type SnowballAuth, type SnowballSmartWallet, } from "../snowball/Snowball";
+export { Snowball } from "./Snowball";
+export * from "./types";
 //# sourceMappingURL=index.d.ts.map

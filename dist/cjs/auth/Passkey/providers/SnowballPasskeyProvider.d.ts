@@ -6,4 +6,5 @@ export interface SnowballPasskeyProvider {
     registerPasskey(username: string): Promise<void>;
     authenticatePasskey(): Promise<void>;
     getEthersWallet(): Promise<PKPEthersWallet>;
+    changeChain(chain: Chain): Promise<PKPEthersWallet>;
 }

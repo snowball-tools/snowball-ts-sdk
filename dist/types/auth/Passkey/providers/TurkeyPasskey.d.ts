@@ -8,5 +8,6 @@ export declare class TurkeyPasskey implements SnowballPasskeyProvider {
     registerPasskey(_username: string): Promise<void>;
     authenticatePasskey(): Promise<void>;
     getEthersWallet(): Promise<PKPEthersWallet>;
+    changeChain(_chain: Chain): Promise<PKPEthersWallet>;
 }
 //# sourceMappingURL=TurkeyPasskey.d.ts.map

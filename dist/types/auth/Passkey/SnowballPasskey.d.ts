@@ -13,5 +13,6 @@ export declare class SnowballPasskey implements SnowballAuth {
     authenticate(): Promise<void>;
     getEthersWallet(): Promise<PKPEthersWallet>;
     initPasskeyProvider(authProviderInfo: AuthProviderInfo): LitPasskey;
+    changeChain(chain: Chain): Promise<PKPEthersWallet>;
 }
 //# sourceMappingURL=SnowballPasskey.d.ts.map

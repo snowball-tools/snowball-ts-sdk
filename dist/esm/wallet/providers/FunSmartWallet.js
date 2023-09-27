@@ -18,5 +18,8 @@ export class FunSmartWallet {
     sendUserOperation(_targetAddress, _data, _sponsorGas) {
         throw new Error("Method not implemented.");
     }
+    changeChain(_chain) {
+        throw new Error("Method not implemented.");
+    }
 }
 //# sourceMappingURL=FunSmartWallet.js.map

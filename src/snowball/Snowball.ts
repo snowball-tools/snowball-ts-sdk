@@ -7,28 +7,7 @@ import {
 import { SmartWallet } from "../wallet";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { SnowballPasskey } from "../auth/Passkey";
-
-export interface SnowballAuth {
-  authProviderInfo: AuthProviderInfo;
-  chain: Chain;
-  isWebAuthnSupported(): boolean;
-  register(username: string): Promise<void>;
-  authenticate(): Promise<void>;
-  getEthersWallet(): Promise<PKPEthersWallet>;
-}
-
-export interface SnowballSmartWallet {
-  smartWalletProviderInfo: SmartWalletProviderInfo;
-  auth: SnowballAuth;
-  getAddress(): Promise<Address>;
-  sendUserOperation(
-    targetAddress: Address,
-    data: Hex,
-    sponsorGas: Boolean
-  ): Promise<{
-    hash: string;
-  }>;
-}
+import type { SnowballAuth, SnowballSmartWallet } from "./types";
 
 export class Snowball {
   private chain: Chain;
@@ -50,17 +29,22 @@ export class Snowball {
     this.smartWalletProviderInfo = smartWalletProviderInfo;
 
     this.auth = new SnowballPasskey(this.chain, this.authProviderInfo);
-    this.getEthersWallet()
-      .then((ethersWallet) => {
-        this.smartWallet = new SmartWallet(
-          ethersWallet,
-          this.auth,
-          this.smartWalletProviderInfo
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  }
+
+  async register(username: string): Promise<void> {
+    try {
+      return await this.auth.register(username);
+    } catch (error) {
+      return Promise.reject(`register failed ${error}`);
+    }
+  }
+
+  async authenticate(): Promise<void> {
+    try {
+      return await this.auth.authenticate();
+    } catch (error) {
+      return Promise.reject(`authenticate failed ${error}`);
+    }
   }
 
   async getEthersWallet(): Promise<PKPEthersWallet> {
@@ -73,8 +57,12 @@ export class Snowball {
 
   async changeChain(chain: Chain): Promise<void> {
     try {
+      if (this.smartWallet === undefined) {
+        this.smartWallet = await this.initSmartWallet();
+      }
       this.chain = chain;
-      this.auth.chain = chain;
+      const ethersWallet = await this.auth.changeChain(chain);
+      await this.smartWallet.changeChain(ethersWallet);
     } catch (error) {
       return Promise.reject(`changeChain failed ${error}`);
     }
@@ -83,16 +71,27 @@ export class Snowball {
   async getAddress(): Promise<Address> {
     try {
       if (this.smartWallet === undefined) {
-        this.ethersWallet = await this.getEthersWallet();
-        this.smartWallet = new SmartWallet(
-          this.ethersWallet,
-          this.auth,
-          this.smartWalletProviderInfo
-        );
+        this.smartWallet = await this.initSmartWallet();
       }
       return await this.smartWallet.getAddress();
     } catch (error) {
       return Promise.reject(`getAddress failed ${error}`);
+    }
+  }
+
+  private async initSmartWallet(): Promise<SnowballSmartWallet> {
+    try {
+      if (this.ethersWallet === undefined) {
+        this.ethersWallet = await this.getEthersWallet();
+      }
+      this.smartWallet = new SmartWallet(
+        this.ethersWallet,
+        this.auth,
+        this.smartWalletProviderInfo
+      );
+      return this.smartWallet;
+    } catch (error) {
+      return Promise.reject(`initSmartWallet failed ${error}`);
     }
   }
 
@@ -105,12 +104,7 @@ export class Snowball {
   }> {
     try {
       if (this.smartWallet === undefined) {
-        this.ethersWallet = await this.getEthersWallet();
-        this.smartWallet = new SmartWallet(
-          this.ethersWallet,
-          this.auth,
-          this.smartWalletProviderInfo
-        );
+        this.smartWallet = await this.initSmartWallet();
       }
       return await this.smartWallet.sendUserOperation(
         targetAddress,

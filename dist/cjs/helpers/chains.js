@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAlchemyNetwork = exports.viemChain = exports.CHAINS = void 0;
+exports.getAlchemyChain = exports.getAlchemyNetwork = exports.viemChain = exports.CHAINS = void 0;
 const chains_1 = require("viem/chains");
 const alchemy_sdk_1 = require("alchemy-sdk");
+const aa_core_1 = require("@alchemy/aa-core");
 exports.CHAINS = {
     ethereum: {
         chainId: 1,
@@ -201,4 +202,17 @@ function getAlchemyNetwork(chain) {
     }
 }
 exports.getAlchemyNetwork = getAlchemyNetwork;
+function getAlchemyChain(chain) {
+    switch (chain) {
+        case exports.CHAINS.ethereum:
+            return aa_core_1.chains.mainnet;
+        case exports.CHAINS.goerli:
+            return aa_core_1.chains.goerli;
+        case exports.CHAINS.sepolia:
+            return aa_core_1.chains.sepolia;
+        default:
+            throw new Error("Unsupported chain");
+    }
+}
+exports.getAlchemyChain = getAlchemyChain;
 //# sourceMappingURL=chains.js.map

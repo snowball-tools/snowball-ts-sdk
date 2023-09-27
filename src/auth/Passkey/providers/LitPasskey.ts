@@ -13,6 +13,7 @@ import type { Chain } from "../../../helpers/chains";
 import { ProviderType } from "@lit-protocol/constants";
 import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers";
 import type { SnowballPasskeyProvider } from "./SnowballPasskeyProvider";
+import { LIT_RELAY_API_KEY } from "../../../helpers/env";
 
 export class LitPasskey implements SnowballPasskeyProvider {
   litAuthClient: LitAuthClient;
@@ -28,9 +29,14 @@ export class LitPasskey implements SnowballPasskeyProvider {
   authProviderInfo: AuthProviderInfo;
 
   constructor(chain: Chain, authProvider: AuthProviderInfo) {
+    this.chain = chain;
+    this.authProviderInfo = authProvider;
+
     this.litAuthClient = new LitAuthClient({
       litRelayConfig: {
-        relayApiKey: authProvider.apiKeys[`relayKey`],
+        relayApiKey: this.authProviderInfo.apiKeys
+          ? this.authProviderInfo.apiKeys["relayKey"]
+          : LIT_RELAY_API_KEY,
       },
     });
 
@@ -44,9 +50,6 @@ export class LitPasskey implements SnowballPasskeyProvider {
       litNetwork: "serrano",
       debug: false,
     });
-
-    this.chain = chain;
-    this.authProviderInfo = authProvider;
   }
 
   async registerPasskey(username: string): Promise<void> {
@@ -68,7 +71,7 @@ export class LitPasskey implements SnowballPasskeyProvider {
 
       return Promise.resolve();
     } catch (error) {
-      return Promise.reject(`registerPasskey failed: ${error}`);
+      return Promise.reject(`registerPasskey failed: ${JSON.stringify(error)}`);
     }
   }
 
@@ -78,7 +81,19 @@ export class LitPasskey implements SnowballPasskeyProvider {
 
       return Promise.resolve();
     } catch (error) {
-      return Promise.reject(`Authentication failed ${error}`);
+      return Promise.reject(`Authentication failed ${JSON.stringify(error)}`);
+    }
+  }
+
+  async changeChain(chain: Chain): Promise<PKPEthersWallet> {
+    try {
+      this.chain = chain;
+      this.sessionSig = await this.getSessionSigs(true);
+      this.pkpWallet = await this.getEthersWallet();
+
+      return this.pkpWallet;
+    } catch (error) {
+      return Promise.reject(`Changing chain failed ${JSON.stringify(error)}`);
     }
   }
 
@@ -100,11 +115,11 @@ export class LitPasskey implements SnowballPasskeyProvider {
 
       return pkps;
     } catch (error) {
-      return Promise.reject(`Retrieving PKPs failed ${error}`);
+      return Promise.reject(`Retrieving PKPs failed ${JSON.stringify(error)}`);
     }
   }
 
-  async getSessionSigs(): Promise<SessionSigsMap> {
+  async getSessionSigs(switchChain: boolean = false): Promise<SessionSigsMap> {
     try {
       if (this.pkpPublicKey === undefined) {
         const pkps = await this.fetchPkpsForAuthMethod();
@@ -134,7 +149,7 @@ export class LitPasskey implements SnowballPasskeyProvider {
             ability: LitAbility.PKPSigning,
           },
         ],
-        switchChain: false,
+        switchChain,
         authNeededCallback: authNeededCallback,
       });
 
@@ -144,7 +159,9 @@ export class LitPasskey implements SnowballPasskeyProvider {
 
       return this.sessionSig!;
     } catch (error) {
-      return Promise.reject(`Retrieving session sigs failed ${error}`);
+      return Promise.reject(
+        `Retrieving session sigs failed ${JSON.stringify(error)}`
+      );
     }
   }
 
@@ -168,7 +185,7 @@ export class LitPasskey implements SnowballPasskeyProvider {
 
       return this.pkpWallet;
     } catch (error) {
-      return Promise.reject(`Transaction failed ${error}`);
+      return Promise.reject(`Transaction failed ${JSON.stringify(error)}`);
     }
   }
 }

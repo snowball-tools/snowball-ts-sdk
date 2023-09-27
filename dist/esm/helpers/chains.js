@@ -1,5 +1,6 @@
 import { mainnet, sepolia, goerli } from "viem/chains";
 import { Network } from "alchemy-sdk";
+import { chains } from "@alchemy/aa-core";
 export const CHAINS = {
     ethereum: {
         chainId: 1,
@@ -192,6 +193,18 @@ export function getAlchemyNetwork(chain) {
             return Network.ETH_GOERLI;
         case CHAINS.sepolia:
             return Network.ETH_SEPOLIA;
+        default:
+            throw new Error("Unsupported chain");
+    }
+}
+export function getAlchemyChain(chain) {
+    switch (chain) {
+        case CHAINS.ethereum:
+            return chains.mainnet;
+        case CHAINS.goerli:
+            return chains.goerli;
+        case CHAINS.sepolia:
+            return chains.sepolia;
         default:
             throw new Error("Unsupported chain");
     }

@@ -1,6 +1,6 @@
 import type { Address } from "viem";
 import type { Chain, SmartWalletProviderInfo } from "../../helpers";
-import type { SnowballSmartWalletProvider } from "./SnowballSmartWalletProvider";
+import type { SnowballSmartWalletProvider } from "./types";
 export declare class FunSmartWallet implements SnowballSmartWalletProvider {
     chain: Chain;
     smartWalletProviderInfo: SmartWalletProviderInfo;
@@ -8,4 +8,5 @@ export declare class FunSmartWallet implements SnowballSmartWalletProvider {
     sendUserOperation(_targetAddress: Address, _data: Address, _sponsorGas: Boolean): Promise<{
         hash: string;
     }>;
+    changeChain(_chain: Chain): void;
 }

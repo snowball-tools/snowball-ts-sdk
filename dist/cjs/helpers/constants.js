@@ -1,11 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_EXP = exports.AuthProviders = exports.SmartWalletProviders = exports.SmartWalletProvider = exports.AuthProvider = void 0;
+exports.DEFAULT_EXP = exports.AuthProviders = exports.SmartWalletProviders = exports.SmartWalletProvider = exports.AuthProvider = exports.FunSmartWalletProviderKey = exports.AlchemySmartWalletProviderKey = void 0;
+var AlchemySmartWalletProviderKey;
+(function (AlchemySmartWalletProviderKey) {
+    AlchemySmartWalletProviderKey["goerli"] = "alchemyKey-goerli";
+    AlchemySmartWalletProviderKey["sepolia"] = "alchemyKey-sepolia";
+    AlchemySmartWalletProviderKey["goerli_gasPolicyId"] = "alchemyKey-goerli-gasPolicyId";
+    AlchemySmartWalletProviderKey["sepolia_gasPolicyId"] = "alchemyKey-sepolia-gasPolicyId";
+})(AlchemySmartWalletProviderKey || (exports.AlchemySmartWalletProviderKey = AlchemySmartWalletProviderKey = {}));
+var FunSmartWalletProviderKey;
+(function (FunSmartWalletProviderKey) {
+    FunSmartWalletProviderKey["key"] = "funKey";
+    FunSmartWalletProviderKey["gasPolicyId"] = "funKey-gasPolicyId";
+})(FunSmartWalletProviderKey || (exports.FunSmartWalletProviderKey = FunSmartWalletProviderKey = {}));
 var AuthProvider;
 (function (AuthProvider) {
     AuthProvider["lit"] = "lit";
     AuthProvider["turnkey"] = "turnkey";
-    AuthProvider["privy"] = "privy";
 })(AuthProvider || (exports.AuthProvider = AuthProvider = {}));
 var SmartWalletProvider;
 (function (SmartWalletProvider) {
@@ -29,10 +40,6 @@ exports.AuthProviders = {
     },
     turnkey: {
         name: AuthProvider.turnkey,
-        apiKeys: {},
-    },
-    privy: {
-        name: AuthProvider.privy,
         apiKeys: {},
     },
 };

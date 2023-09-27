@@ -1,2 +1,3 @@
-export { Snowball, } from "../snowball/Snowball";
+export { Snowball } from "./Snowball";
+export * from "./types";
 //# sourceMappingURL=index.js.map

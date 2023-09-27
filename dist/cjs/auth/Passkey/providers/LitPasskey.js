@@ -7,6 +7,7 @@ const pkp_ethers_1 = require("@lit-protocol/pkp-ethers");
 const constants_1 = require("../../../helpers/constants");
 const constants_2 = require("@lit-protocol/constants");
 const auth_helpers_1 = require("@lit-protocol/auth-helpers");
+const env_1 = require("../../../helpers/env");
 class LitPasskey {
     constructor(chain, authProvider) {
         Object.defineProperty(this, "litAuthClient", {
@@ -63,9 +64,13 @@ class LitPasskey {
             writable: true,
             value: void 0
         });
+        this.chain = chain;
+        this.authProviderInfo = authProvider;
         this.litAuthClient = new lit_auth_client_1.LitAuthClient({
             litRelayConfig: {
-                relayApiKey: authProvider.apiKeys[`relayKey`],
+                relayApiKey: this.authProviderInfo.apiKeys
+                    ? this.authProviderInfo.apiKeys["relayKey"]
+                    : env_1.LIT_RELAY_API_KEY,
             },
         });
         this.litAuthClient.initProvider(constants_2.ProviderType.WebAuthn);
@@ -74,8 +79,6 @@ class LitPasskey {
             litNetwork: "serrano",
             debug: false,
         });
-        this.chain = chain;
-        this.authProviderInfo = authProvider;
     }
     async registerPasskey(username) {
         try {
@@ -89,7 +92,7 @@ class LitPasskey {
             return Promise.resolve();
         }
         catch (error) {
-            return Promise.reject(`registerPasskey failed: ${error}`);
+            return Promise.reject(`registerPasskey failed: ${JSON.stringify(error)}`);
         }
     }
     async authenticatePasskey() {
@@ -98,7 +101,18 @@ class LitPasskey {
             return Promise.resolve();
         }
         catch (error) {
-            return Promise.reject(`Authentication failed ${error}`);
+            return Promise.reject(`Authentication failed ${JSON.stringify(error)}`);
+        }
+    }
+    async changeChain(chain) {
+        try {
+            this.chain = chain;
+            this.sessionSig = await this.getSessionSigs(true);
+            this.pkpWallet = await this.getEthersWallet();
+            return this.pkpWallet;
+        }
+        catch (error) {
+            return Promise.reject(`Changing chain failed ${JSON.stringify(error)}`);
         }
     }
     async fetchPkpsForAuthMethod() {
@@ -114,10 +128,10 @@ class LitPasskey {
             return pkps;
         }
         catch (error) {
-            return Promise.reject(`Retrieving PKPs failed ${error}`);
+            return Promise.reject(`Retrieving PKPs failed ${JSON.stringify(error)}`);
         }
     }
-    async getSessionSigs() {
+    async getSessionSigs(switchChain = false) {
         try {
             if (this.pkpPublicKey === undefined) {
                 const pkps = await this.fetchPkpsForAuthMethod();
@@ -144,7 +158,7 @@ class LitPasskey {
                         ability: auth_helpers_1.LitAbility.PKPSigning,
                     },
                 ],
-                switchChain: false,
+                switchChain,
                 authNeededCallback: authNeededCallback,
             });
             if (this.sessionSig === undefined) {
@@ -153,7 +167,7 @@ class LitPasskey {
             return this.sessionSig;
         }
         catch (error) {
-            return Promise.reject(`Retrieving session sigs failed ${error}`);
+            return Promise.reject(`Retrieving session sigs failed ${JSON.stringify(error)}`);
         }
     }
     async getEthersWallet() {
@@ -174,7 +188,7 @@ class LitPasskey {
             return this.pkpWallet;
         }
         catch (error) {
-            return Promise.reject(`Transaction failed ${error}`);
+            return Promise.reject(`Transaction failed ${JSON.stringify(error)}`);
         }
     }
 }

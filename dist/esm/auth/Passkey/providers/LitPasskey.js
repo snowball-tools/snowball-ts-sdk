@@ -1,9 +1,10 @@
-import { LitAuthClient, WebAuthnProvider } from "@lit-protocol/lit-auth-client";
+import { LitAuthClient } from "@lit-protocol/lit-auth-client";
 import { LitNodeClient } from "@lit-protocol/lit-node-client";
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { DEFAULT_EXP } from "../../../helpers/constants";
 import { ProviderType } from "@lit-protocol/constants";
 import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers";
+import { LIT_RELAY_API_KEY } from "../../../helpers/env";
 export class LitPasskey {
     constructor(chain, authProvider) {
         Object.defineProperty(this, "litAuthClient", {
@@ -60,9 +61,13 @@ export class LitPasskey {
             writable: true,
             value: void 0
         });
+        this.chain = chain;
+        this.authProviderInfo = authProvider;
         this.litAuthClient = new LitAuthClient({
             litRelayConfig: {
-                relayApiKey: authProvider.apiKeys[`relayKey`],
+                relayApiKey: this.authProviderInfo.apiKeys
+                    ? this.authProviderInfo.apiKeys["relayKey"]
+                    : LIT_RELAY_API_KEY,
             },
         });
         this.litAuthClient.initProvider(ProviderType.WebAuthn);
@@ -71,8 +76,6 @@ export class LitPasskey {
             litNetwork: "serrano",
             debug: false,
         });
-        this.chain = chain;
-        this.authProviderInfo = authProvider;
     }
     async registerPasskey(username) {
         try {
@@ -86,7 +89,7 @@ export class LitPasskey {
             return Promise.resolve();
         }
         catch (error) {
-            return Promise.reject(`registerPasskey failed: ${error}`);
+            return Promise.reject(`registerPasskey failed: ${JSON.stringify(error)}`);
         }
     }
     async authenticatePasskey() {
@@ -95,7 +98,18 @@ export class LitPasskey {
             return Promise.resolve();
         }
         catch (error) {
-            return Promise.reject(`Authentication failed ${error}`);
+            return Promise.reject(`Authentication failed ${JSON.stringify(error)}`);
+        }
+    }
+    async changeChain(chain) {
+        try {
+            this.chain = chain;
+            this.sessionSig = await this.getSessionSigs(true);
+            this.pkpWallet = await this.getEthersWallet();
+            return this.pkpWallet;
+        }
+        catch (error) {
+            return Promise.reject(`Changing chain failed ${JSON.stringify(error)}`);
         }
     }
     async fetchPkpsForAuthMethod() {
@@ -111,10 +125,10 @@ export class LitPasskey {
             return pkps;
         }
         catch (error) {
-            return Promise.reject(`Retrieving PKPs failed ${error}`);
+            return Promise.reject(`Retrieving PKPs failed ${JSON.stringify(error)}`);
         }
     }
-    async getSessionSigs() {
+    async getSessionSigs(switchChain = false) {
         try {
             if (this.pkpPublicKey === undefined) {
                 const pkps = await this.fetchPkpsForAuthMethod();
@@ -141,7 +155,7 @@ export class LitPasskey {
                         ability: LitAbility.PKPSigning,
                     },
                 ],
-                switchChain: false,
+                switchChain,
                 authNeededCallback: authNeededCallback,
             });
             if (this.sessionSig === undefined) {
@@ -150,7 +164,7 @@ export class LitPasskey {
             return this.sessionSig;
         }
         catch (error) {
-            return Promise.reject(`Retrieving session sigs failed ${error}`);
+            return Promise.reject(`Retrieving session sigs failed ${JSON.stringify(error)}`);
         }
     }
     async getEthersWallet() {
@@ -171,7 +185,7 @@ export class LitPasskey {
             return this.pkpWallet;
         }
         catch (error) {
-            return Promise.reject(`Transaction failed ${error}`);
+            return Promise.reject(`Transaction failed ${JSON.stringify(error)}`);
         }
     }
 }

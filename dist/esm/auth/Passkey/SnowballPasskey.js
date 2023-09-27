@@ -59,12 +59,19 @@ export class SnowballPasskey {
         }
     }
     async getEthersWallet() {
-        switch (this.authProviderInfo.name) {
-            case AuthProvider.lit:
-                return await this.passkeyProvider.getEthersWallet();
-            case AuthProvider.turnkey:
-            default:
-                throw new Error("Method not implemented.");
+        try {
+            switch (this.authProviderInfo.name) {
+                case AuthProvider.lit:
+                    return await this.passkeyProvider.getEthersWallet();
+                case AuthProvider.turnkey:
+                default:
+                    throw new Error("Method not implemented.");
+            }
+        }
+        catch (e) {
+            console.log("Error getting ethers wallet");
+            console.log(e);
+            throw Promise.reject(e);
         }
     }
     initPasskeyProvider(authProviderInfo) {
@@ -74,6 +81,16 @@ export class SnowballPasskey {
             case AuthProvider.turnkey:
             default:
                 throw new Error("Auth Provider has not been impl yet");
+        }
+    }
+    async changeChain(chain) {
+        try {
+            this.chain = chain;
+            return await this.passkeyProvider.changeChain(chain);
+        }
+        catch (e) {
+            console.log(`Error changing chain to ${chain}. ${JSON.stringify(e)}}`);
+            throw Promise.reject(e);
         }
     }
 }
