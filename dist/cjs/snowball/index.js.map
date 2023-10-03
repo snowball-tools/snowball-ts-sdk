@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/snowball/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;AAAA,uCAAsC;AAA7B,oGAAA,QAAQ,OAAA;AACjB,0CAAwB","sourcesContent":["export { Snowball } from \"./Snowball\";\nexport * from \"./types\";\n"]}

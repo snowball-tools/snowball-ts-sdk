@@ -1,5 +1,4 @@
 import type { Chain } from "../../helpers/chains";
-import { browserSupportsWebAuthn } from "@simplewebauthn/browser";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { AuthProvider, type AuthProviderInfo } from "../../helpers";
 import type { SnowballAuth } from "../../snowball";
@@ -14,10 +13,6 @@ export class SnowballPasskey implements SnowballAuth {
     this.chain = chain;
     this.authProviderInfo = authProviderInfo;
     this.passkeyProvider = this.initPasskeyProvider(authProviderInfo);
-  }
-
-  isWebAuthnSupported(): boolean {
-    return browserSupportsWebAuthn();
   }
 
   async register(username: string): Promise<void> {

@@ -49,7 +49,7 @@ export const snowball = new Snowball(
 );
 ```
 
-### Methods 
+### Methods
 
 ```ts
 register(username: string): Promise<void>; // passkey

@@ -1,1 +1,0 @@
-{"version":3,"file":"types.js","sourceRoot":"","sources":["../../src/types.ts"],"names":[],"mappings":"","sourcesContent":["export type { SnowballAuth, SnowballSmartWallet } from \"./snowball\";\n\nexport type { AuthProvider, SmartWalletProviderInfo, Chain } from \"./helpers\";\n"]}

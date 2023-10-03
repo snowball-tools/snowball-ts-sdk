@@ -1,1 +1,0 @@
-export { SnowballPasskey } from "./SnowballPasskey";

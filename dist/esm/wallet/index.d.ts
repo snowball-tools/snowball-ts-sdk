@@ -1,1 +1,0 @@
-export { SmartWallet } from "./SmartWallet";

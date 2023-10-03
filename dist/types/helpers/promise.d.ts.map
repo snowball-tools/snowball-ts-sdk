@@ -1,1 +1,0 @@
-{"version":3,"file":"promise.d.ts","sourceRoot":"","sources":["../../../src/helpers/promise.ts"],"names":[],"mappings":"AAAA,wBAAsB,KAAK,CAAC,CAAC,SAAS,CAAC,GAAG,IAAI,EAAE,GAAG,EAAE,KAAK,GAAG,EAC3D,EAAE,EAAE,CAAC,EACL,IAAI,EAAE,UAAU,CAAC,CAAC,CAAC,EACnB,MAAM,EAAE,MAAM,EACd,UAAU,SAAI,GACb,OAAO,CAAC,OAAO,CAAC,UAAU,CAAC,CAAC,CAAC,CAAC,CAAC,CAWjC"}
