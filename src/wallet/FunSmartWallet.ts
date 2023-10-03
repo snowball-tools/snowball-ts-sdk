@@ -1,18 +1,9 @@
 import type { Address } from "viem";
-import type { Chain, SmartWalletProviderInfo } from "../../helpers";
-import type { SnowballSmartWalletProvider } from "./types";
 import { UserOperationResponse, UserOperationReceipt } from "@alchemy/aa-core";
+import { SmartWallet } from "./SmartWallet";
 
-export class FunSmartWallet implements SnowballSmartWalletProvider {
-  chain: Chain;
-  smartWalletProviderInfo: SmartWalletProviderInfo;
-
-  constructor(chain: Chain, smartWalletProviderInfo: SmartWalletProviderInfo) {
-    this.chain = chain;
-    this.smartWalletProviderInfo = smartWalletProviderInfo;
-  }
-
-  sendUserOperation(
+export class FunSmartWallet extends SmartWallet {
+  async sendUserOperation(
     _targetAddress: Address,
     _data: Address,
     _sponsorGas: Boolean
@@ -20,7 +11,7 @@ export class FunSmartWallet implements SnowballSmartWalletProvider {
     throw new Error("Method not implemented.");
   }
 
-  changeChain(_chain: Chain) {
+  async getAddress(): Promise<`0x${string}`> {
     throw new Error("Method not implemented.");
   }
 
@@ -39,6 +30,10 @@ export class FunSmartWallet implements SnowballSmartWalletProvider {
   async getUserOperationReceipt(
     _hash: `0x${string}`
   ): Promise<UserOperationReceipt> {
+    throw new Error("Method not implemented.");
+  }
+
+  async switchChain(): Promise<void> {
     throw new Error("Method not implemented.");
   }
 }

@@ -1,24 +1,24 @@
 import type { Address, Hex, UserOperationReceipt, UserOperationResponse } from "@alchemy/aa-core";
 import type { Chain } from "../helpers/chains";
-import { type SmartWalletProviderInfo, type AuthProviderInfo } from "../helpers/constants";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import type { SnowballAuth, SnowballSmartWallet } from "./types";
 import { Hash } from "viem";
+import { AuthProviderInfo } from "../auth";
+import { SmartWalletProviderInfo } from "../wallet";
 export declare class Snowball {
     private apiKey;
     private chain;
     private authProviderInfo;
     private smartWalletProviderInfo;
-    auth: SnowballAuth;
-    smartWallet: SnowballSmartWallet | undefined;
-    ethersWallet: PKPEthersWallet | undefined;
+    private auth;
+    private smartWallet;
     constructor(apiKey: string, chain: Chain, authProviderInfo: AuthProviderInfo, smartWalletProviderInfo: SmartWalletProviderInfo);
+    private initAuth;
+    private initSmartWallet;
     register(username: string): Promise<void>;
     authenticate(): Promise<void>;
     getEthersWallet(): Promise<PKPEthersWallet>;
-    changeChain(chain: Chain): Promise<undefined>;
+    switchChain(chain: Chain): Promise<undefined>;
     getAddress(): Promise<Address>;
-    private initSmartWallet;
     sendUserOperation(targetAddress: Address, data: Hex, sponsorGas: Boolean): Promise<{
         hash: string;
     }>;

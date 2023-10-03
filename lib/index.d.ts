@@ -1,5 +1,4 @@
-export * from "./snowball";
-export { Auth } from "./auth";
-export { SmartWallet } from "./wallet";
 export * from "./helpers";
-export * from "./types";
+export * from "./snowball";
+export * from "./auth";
+export * from "./wallet";

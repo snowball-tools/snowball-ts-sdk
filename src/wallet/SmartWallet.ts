@@ -6,38 +6,40 @@ import {
   type SimpleSmartAccountOwner,
 } from "@alchemy/aa-core";
 import type { TypedDataField } from "ethers";
-import { AlchemySmartWallet } from "./providers/AlchemySmartWallet";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import type { SnowballAuth, SnowballSmartWallet } from "../snowball";
-import { SmartWalletProvider, type SmartWalletProviderInfo } from "../helpers";
-import type { SnowballSmartWalletProvider } from "./providers/types";
+import { Chain } from "../helpers";
+import { Hash, Hex } from "viem";
+import { Auth } from "../auth";
+import { SmartWalletProviderInfo } from "./types";
 
-export class SmartWallet implements SnowballSmartWallet {
-  smartWalletProvider: SnowballSmartWalletProvider | undefined;
-  ethersWallet: PKPEthersWallet;
-  auth: SnowballAuth;
-  simpleAccountOwner: SimpleSmartAccountOwner | undefined;
+export abstract class SmartWallet {
+  ethersWallet: PKPEthersWallet | undefined;
+  auth: Auth;
+  private _simpleAccountOwner: SimpleSmartAccountOwner | undefined;
   address: Address | undefined;
   smartWalletProviderInfo: SmartWalletProviderInfo;
 
-  constructor(
-    ethersWallet: PKPEthersWallet,
-    auth: SnowballAuth,
-    smartWalletProviderInfo: SmartWalletProviderInfo
-  ) {
+  constructor(auth: Auth, smartWalletProviderInfo: SmartWalletProviderInfo) {
     this.auth = auth;
     this.smartWalletProviderInfo = smartWalletProviderInfo;
-    this.ethersWallet = ethersWallet;
   }
 
   async getSimpleAccountOwner(): Promise<SimpleSmartAccountOwner> {
+    if (this._simpleAccountOwner !== undefined) {
+      return this._simpleAccountOwner;
+    }
+
     try {
+      if (this.ethersWallet === undefined) {
+        this.ethersWallet = await this.auth.getEthersWallet();
+      }
+
       const owner: SimpleSmartAccountOwner = {
         signMessage: async (msg: Uint8Array) => {
-          return (await this.ethersWallet.signMessage(msg)) as Address;
+          return (await this.ethersWallet!.signMessage(msg)) as Address;
         },
         getAddress: async () => {
-          return (await this.ethersWallet.getAddress()) as Address;
+          return (await this.ethersWallet!.getAddress()) as Address;
         },
         signTypedData: async (params: SignTypedDataParams) => {
           const types: Record<string, Array<TypedDataField>> = {
@@ -50,7 +52,7 @@ export class SmartWallet implements SnowballSmartWallet {
             ),
           };
 
-          return (await this.ethersWallet._signTypedData(
+          return (await this.ethersWallet!._signTypedData(
             params.domain ? params.domain : {},
             types,
             params.message
@@ -58,7 +60,7 @@ export class SmartWallet implements SnowballSmartWallet {
         },
       };
 
-      this.simpleAccountOwner = owner;
+      this._simpleAccountOwner = owner;
 
       return owner;
     } catch (error) {
@@ -68,153 +70,20 @@ export class SmartWallet implements SnowballSmartWallet {
     }
   }
 
-  async getAddress(): Promise<Address> {
-    if (this.address) {
-      return this.address;
-    }
-
-    try {
-      const owner = this.simpleAccountOwner
-        ? this.simpleAccountOwner
-        : await this.getSimpleAccountOwner();
-      this.address = await owner.getAddress();
-      return this.address;
-    } catch (error) {
-      throw new Error(`Error getting address ${JSON.stringify(error)}`);
-    }
+  public get chain(): Chain {
+    return this.auth.chain;
   }
 
-  async changeChain(): Promise<void> {
-    if (this.smartWalletProvider === undefined) {
-      this.smartWalletProvider = await this.initSmartWalletProvider();
-    }
-
-    try {
-      this.simpleAccountOwner = await this.getSimpleAccountOwner();
-      this.smartWalletProvider.changeChain(this.auth.chain);
-    } catch (error) {
-      return Promise.reject(`changeChain failed ${JSON.stringify(error)}`);
-    }
-  }
-
-  async sendUserOperation(
+  abstract getAddress(): Promise<Address>;
+  abstract switchChain(): Promise<void>;
+  abstract sendUserOperation(
     targetAddress: Address,
-    data: Address,
+    data: Hex,
     sponsorGas: Boolean
   ): Promise<{
     hash: string;
-  }> {
-    try {
-      if (this.smartWalletProvider === undefined) {
-        this.smartWalletProvider = await this.initSmartWalletProvider();
-      }
-
-      switch (this.smartWalletProviderInfo.name) {
-        case SmartWalletProvider.alchemy:
-          return await this.smartWalletProvider.sendUserOperation(
-            targetAddress,
-            data,
-            sponsorGas
-          );
-        case SmartWalletProvider.fun:
-        default:
-          throw new Error("Auth Provider has not been impl yet");
-      }
-    } catch (error) {
-      return Promise.reject(
-        `sendUserOperation failed ${JSON.stringify(error)}`
-      );
-    }
-  }
-
-  async initSmartWalletProvider(): Promise<SnowballSmartWalletProvider> {
-    try {
-      if (this.simpleAccountOwner === undefined) {
-        this.simpleAccountOwner = await this.getSimpleAccountOwner();
-      }
-      switch (this.smartWalletProviderInfo.name) {
-        case SmartWalletProvider.alchemy:
-          return new AlchemySmartWallet(
-            this.simpleAccountOwner,
-            this.smartWalletProviderInfo,
-            this.auth.chain
-          );
-        case SmartWalletProvider.fun:
-        default:
-          throw new Error("Auth Provider has not been impl yet");
-      }
-    } catch (error) {
-      return Promise.reject(
-        `initSmartWalletProvider failed ${JSON.stringify(error)}`
-      );
-    }
-  }
-
-  async waitForUserOperationTransaction(
-    hash: `0x${string}`
-  ): Promise<`0x${string}`> {
-    try {
-      if (this.smartWalletProvider === undefined) {
-        this.smartWalletProvider = await this.initSmartWalletProvider();
-      }
-
-      switch (this.smartWalletProviderInfo.name) {
-        case SmartWalletProvider.alchemy:
-          return await this.smartWalletProvider.waitForUserOperationTransaction(
-            hash
-          );
-        case SmartWalletProvider.fun:
-        default:
-          throw new Error("Auth Provider has not been impl yet");
-      }
-    } catch (error) {
-      return Promise.reject(
-        `waitForUserOperationTransaction failed ${JSON.stringify(error)}`
-      );
-    }
-  }
-
-  async getUserOperationByHash(
-    hash: `0x${string}`
-  ): Promise<UserOperationResponse> {
-    try {
-      if (this.smartWalletProvider === undefined) {
-        this.smartWalletProvider = await this.initSmartWalletProvider();
-      }
-
-      switch (this.smartWalletProviderInfo.name) {
-        case SmartWalletProvider.alchemy:
-          return await this.smartWalletProvider.getUserOperationByHash(hash);
-        case SmartWalletProvider.fun:
-        default:
-          throw new Error("Auth Provider has not been impl yet");
-      }
-    } catch (error) {
-      return Promise.reject(
-        `getUserOperationByHash failed ${JSON.stringify(error)}`
-      );
-    }
-  }
-
-  async getUserOperationReceipt(
-    hash: `0x${string}`
-  ): Promise<UserOperationReceipt> {
-    try {
-      if (this.smartWalletProvider === undefined) {
-        this.smartWalletProvider = await this.initSmartWalletProvider();
-      }
-
-      switch (this.smartWalletProviderInfo.name) {
-        case SmartWalletProvider.alchemy:
-          return await this.smartWalletProvider.getUserOperationReceipt(hash);
-        case SmartWalletProvider.fun:
-        default:
-          throw new Error("Auth Provider has not been impl yet");
-      }
-    } catch (error) {
-      return Promise.reject(
-        `getUserOperationByHash failed ${JSON.stringify(error)}`
-      );
-    }
-  }
+  }>;
+  abstract waitForUserOperationTransaction(hash: Hash): Promise<Hash>;
+  abstract getUserOperationByHash(hash: Hash): Promise<UserOperationResponse>;
+  abstract getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt>;
 }

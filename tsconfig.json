@@ -3,7 +3,6 @@
     "target": "ES2022",
     "lib": ["ES2022", "dom"],
     "module": "commonjs",
-    "declaration": true,
     "outDir": "./lib",
     "strict": true,
     "skipLibCheck": true,
@@ -11,7 +10,8 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "allowJs": false
+    "allowJs": false,
+    
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

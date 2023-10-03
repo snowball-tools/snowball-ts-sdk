@@ -8,14 +8,15 @@ import type {
   IRelayPollStatusResponse,
 } from "@lit-protocol/types";
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import { DEFAULT_EXP, type AuthProviderInfo } from "../../../helpers/constants";
-import type { Chain } from "../../../helpers/chains";
 import { ProviderType } from "@lit-protocol/constants";
 import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers";
-import type { SnowballPasskeyProvider } from "./SnowballPasskeyProvider";
-import { LIT_RELAY_API_KEY } from "../../../helpers/env";
+import { LIT_RELAY_API_KEY } from "../../helpers/env";
+import { Chain } from "../../helpers";
+import { DEFAULT_EXP } from "../../helpers/constants";
+import { Passkey } from "./Passkey";
+import { AuthProviderInfo } from "./types";
 
-export class LitPasskey implements SnowballPasskeyProvider {
+export class LitPasskey extends Passkey {
   litAuthClient: LitAuthClient;
   webAuthnProvider: WebAuthnProvider;
   litNodeClient: LitNodeClient;
@@ -25,12 +26,8 @@ export class LitPasskey implements SnowballPasskeyProvider {
   private sessionSig: SessionSigsMap | undefined;
   private pkpWallet: PKPEthersWallet | undefined;
 
-  chain: Chain;
-  authProviderInfo: AuthProviderInfo;
-
   constructor(chain: Chain, authProvider: AuthProviderInfo) {
-    this.chain = chain;
-    this.authProviderInfo = authProvider;
+    super(chain, authProvider);
 
     this.litAuthClient = new LitAuthClient({
       litRelayConfig: {

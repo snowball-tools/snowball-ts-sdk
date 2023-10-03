@@ -1,24 +1,24 @@
 import { UserOperationReceipt, UserOperationResponse, type Address, type SimpleSmartAccountOwner } from "@alchemy/aa-core";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import type { SnowballAuth, SnowballSmartWallet } from "../snowball";
-import { type SmartWalletProviderInfo } from "../helpers";
-import type { SnowballSmartWalletProvider } from "./providers/types";
-export declare class SmartWallet implements SnowballSmartWallet {
-    smartWalletProvider: SnowballSmartWalletProvider | undefined;
-    ethersWallet: PKPEthersWallet;
-    auth: SnowballAuth;
-    simpleAccountOwner: SimpleSmartAccountOwner | undefined;
+import { Chain } from "../helpers";
+import { Hash, Hex } from "viem";
+import { Auth } from "../auth";
+import { SmartWalletProviderInfo } from "./types";
+export declare abstract class SmartWallet {
+    ethersWallet: PKPEthersWallet | undefined;
+    auth: Auth;
+    private _simpleAccountOwner;
     address: Address | undefined;
     smartWalletProviderInfo: SmartWalletProviderInfo;
-    constructor(ethersWallet: PKPEthersWallet, auth: SnowballAuth, smartWalletProviderInfo: SmartWalletProviderInfo);
+    constructor(auth: Auth, smartWalletProviderInfo: SmartWalletProviderInfo);
     getSimpleAccountOwner(): Promise<SimpleSmartAccountOwner>;
-    getAddress(): Promise<Address>;
-    changeChain(): Promise<void>;
-    sendUserOperation(targetAddress: Address, data: Address, sponsorGas: Boolean): Promise<{
+    get chain(): Chain;
+    abstract getAddress(): Promise<Address>;
+    abstract switchChain(): Promise<void>;
+    abstract sendUserOperation(targetAddress: Address, data: Hex, sponsorGas: Boolean): Promise<{
         hash: string;
     }>;
-    initSmartWalletProvider(): Promise<SnowballSmartWalletProvider>;
-    waitForUserOperationTransaction(hash: `0x${string}`): Promise<`0x${string}`>;
-    getUserOperationByHash(hash: `0x${string}`): Promise<UserOperationResponse>;
-    getUserOperationReceipt(hash: `0x${string}`): Promise<UserOperationReceipt>;
+    abstract waitForUserOperationTransaction(hash: Hash): Promise<Hash>;
+    abstract getUserOperationByHash(hash: Hash): Promise<UserOperationResponse>;
+    abstract getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt>;
 }
