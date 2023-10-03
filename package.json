@@ -13,7 +13,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "description": "snowball auth library",
+  "description": "snowball ts sdk",
   "repository": "https://github.com/snowball-tools/snowball-ts-auth",
   "keywords": [
     "ts"

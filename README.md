@@ -1,4 +1,4 @@
-# Snowball TS Auth
+# Snowball TS SDK
 
 This is a simple library to authenticate with the Snowball SDK
 
@@ -62,3 +62,8 @@ waitForUserOperationTransaction(hash: Hash): Promise<Hash>;
 getUserOperationByHash(hash: Hash): Promise<UserOperationResponse>;
 getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt>;
 ```
+
+### Docs
+
+- [Snowball SDK](https://sdk.snowballtools.xyz)
+- [Snowball SDK Demo App](https://iglootools.xyz/)
