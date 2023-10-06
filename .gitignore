@@ -36,3 +36,6 @@ next-env.d.ts
 
 yarn.lock
 .env
+
+# compiled output
+/lib
