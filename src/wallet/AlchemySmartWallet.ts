@@ -30,7 +30,7 @@ export class AlchemySmartWallet extends SmartWallet {
   async sendUserOperation(
     targetAddress: Address,
     data: Hex,
-    sponsorGas: Boolean
+    sponsorGas: boolean
   ): Promise<SendUserOperationResult> {
     try {
       this.provider = this.provider

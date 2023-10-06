@@ -108,7 +108,7 @@ export class Snowball {
   async sendUserOperation(
     targetAddress: Address,
     data: Hex,
-    sponsorGas: Boolean
+    sponsorGas: boolean
   ): Promise<{
     hash: string;
   }> {

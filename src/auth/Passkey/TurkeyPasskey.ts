@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Passkey } from "./Passkey";
 

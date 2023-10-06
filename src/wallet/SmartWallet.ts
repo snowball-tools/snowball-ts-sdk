@@ -79,7 +79,7 @@ export abstract class SmartWallet {
   abstract sendUserOperation(
     targetAddress: Address,
     data: Hex,
-    sponsorGas: Boolean
+    sponsorGas: boolean
   ): Promise<{
     hash: string;
   }>;

@@ -7,7 +7,9 @@
   "license": "LGPL-3.0-or-later",
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "yarn run build"
+    "prepublishOnly": "yarn run build",
+    "lint": "eslint --ext .ts src",
+    "lint:fix": "eslint --fix --ext .ts src"
   },
   "publishConfig": {
     "access": "public",
@@ -16,7 +18,9 @@
   "description": "snowball ts sdk",
   "repository": "https://github.com/snowball-tools/snowball-ts-auth",
   "keywords": [
-    "ts"
+    "ts",
+    "passkeys",
+    "account abstraction"
   ],
   "directories": {
     "lib": "lib"
@@ -49,10 +53,13 @@
   },
   "devDependencies": {
     "@types/node": "^20.5.5",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
     "dotenv": "^16.3.1",
     "esbuild": "^0.14.25",
     "esbuild-node-builtins": "^0.1.0",
-    "eslint": "8.47.0",
+    "eslint": "^8.50.0",
+    "eslint-plugin-no-loops": "^0.3.0",
     "prettier": "^2.6.2",
     "tslib": "^2.6.2",
     "typescript": "^5.0.4",

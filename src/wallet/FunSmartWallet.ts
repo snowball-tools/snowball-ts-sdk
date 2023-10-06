@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { Address } from "viem";
 import { UserOperationResponse, UserOperationReceipt } from "@alchemy/aa-core";
 import { SmartWallet } from "./SmartWallet";
@@ -6,7 +7,7 @@ export class FunSmartWallet extends SmartWallet {
   async sendUserOperation(
     _targetAddress: Address,
     _data: Address,
-    _sponsorGas: Boolean
+    _sponsorGas: boolean
   ): Promise<{ hash: string }> {
     throw new Error("Method not implemented.");
   }
