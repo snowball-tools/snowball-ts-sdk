@@ -13,7 +13,9 @@ export abstract class Auth {
 
   abstract register(username: string): Promise<void>;
   abstract authenticate(): Promise<void>;
-  abstract getEthersWallet(): Promise<PKPEthersWallet>;
+  abstract getEthersWallet(
+    config?: () => Promise<any>
+  ): Promise<PKPEthersWallet>;
 
   switchChain(chain: Chain) {
     this.chain = chain;

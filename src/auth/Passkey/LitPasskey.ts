@@ -150,7 +150,7 @@ export class LitPasskey extends Passkey {
     }
   }
 
-  async getEthersWallet(): Promise<PKPEthersWallet> {
+  async getEthersWallet(config?: () => Promise<any>): Promise<PKPEthersWallet> {
     try {
       if (this.sessionSig === undefined) {
         this.sessionSig = await this.getSessionSigs();
@@ -160,6 +160,8 @@ export class LitPasskey extends Passkey {
         const pkps = await this.fetchPkpsForAuthMethod();
         this.pkpPublicKey = pkps[0].publicKey;
       }
+
+      config ? await config() : null;
 
       this.pkpWallet = new PKPEthersWallet({
         controllerSessionSigs: this.sessionSig,

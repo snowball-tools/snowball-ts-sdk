@@ -24,5 +24,7 @@ export abstract class Passkey extends Auth {
 
   abstract registerPasskey(username: string): Promise<void>;
   abstract authenticatePasskey(): Promise<void>;
-  abstract override getEthersWallet(): Promise<PKPEthersWallet>;
+  abstract override getEthersWallet(
+    config?: () => Promise<any>
+  ): Promise<PKPEthersWallet>;
 }

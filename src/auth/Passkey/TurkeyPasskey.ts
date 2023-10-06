@@ -10,7 +10,7 @@ export class TurkeyPasskey extends Passkey {
     throw new Error("Method not implemented.");
   }
 
-  getEthersWallet(): Promise<PKPEthersWallet> {
+  getEthersWallet(config?: () => Promise<any>): Promise<PKPEthersWallet> {
     throw new Error("Method not implemented.");
   }
 }
