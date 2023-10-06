@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/auth/Passkey/index.ts"],"names":[],"mappings":";;;AAAA,qCAAoC;AAA3B,kGAAA,OAAO,OAAA;AAChB,2CAA0C;AAAjC,wGAAA,UAAU,OAAA;AACnB,iDAAgD;AAAvC,8GAAA,aAAa,OAAA"}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/auth/Passkey/index.ts"],"names":[],"mappings":";;;;AAAA,qCAAoC;AAA3B,kGAAA,OAAO,OAAA;AAChB,2CAA0C;AAAjC,wGAAA,UAAU,OAAA;AACnB,iDAAgD;AAAvC,8GAAA,aAAa,OAAA;AAEtB,kDAAwB"}

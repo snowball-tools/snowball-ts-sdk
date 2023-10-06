@@ -1,6 +1,6 @@
 {
   "name": "@snowballtools/snowball-ts-sdk",
-  "version": "0.1.6",
+  "version": "0.1.9-alpha.1",
   "author": "Snowball Tools Inc. <viv@snowballtools.xyz>",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -33,6 +33,7 @@
     "@ethersproject/hash": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/wallet": "^5.7.0",
+    "@fun-xyz/core": "^0.4.8",
     "@lit-protocol/auth-helpers": "^2.2.50",
     "@lit-protocol/constants": "^2.2.50",
     "@lit-protocol/encryption": "^2.2.50",

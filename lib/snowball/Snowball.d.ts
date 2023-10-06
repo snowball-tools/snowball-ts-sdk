@@ -2,8 +2,8 @@ import type { Address, Hex, UserOperationReceipt, UserOperationResponse } from "
 import type { Chain } from "../helpers/chains";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Hash } from "viem";
-import { AuthProviderInfo } from "../auth";
-import { SmartWalletProviderInfo } from "../wallet";
+import { SmartWalletProviderInfo } from "../wallet/types";
+import { AuthProviderInfo } from "../auth/Passkey/types";
 export declare class Snowball {
     private apiKey;
     private chain;

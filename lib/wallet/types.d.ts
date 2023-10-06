@@ -3,10 +3,14 @@ export declare enum SmartWalletProvider {
     fun = "fun"
 }
 export declare enum AlchemySmartWalletProviderKey {
-    goerli = "alchemyKey-goerli",
-    sepolia = "alchemyKey-sepolia",
-    goerli_gasPolicyId = "alchemyKey-goerli-gasPolicyId",
-    sepolia_gasPolicyId = "alchemyKey-sepolia-gasPolicyId"
+    ethereumGoerli = "alchemyKey-goerli",
+    ethereumGoerli_gasPolicyId = "alchemyKey-goerli-gasPolicyId",
+    ethereumSepolia = "alchemyKey-sepolia",
+    ethereumSepolia_gasPolicyId = "alchemyKey-sepolia-gasPolicyId",
+    baseMainnet = "alchemyKey-baseMainnet",
+    baseMainnet_gasPolicyId = "alchemyKey-baseMainnet-gasPolicyId",
+    baseGoerli = "alchemyKey-baseGoerli",
+    baseGoerli_gasPolicyId = "alchemyKey-baseGoerli-gasPolicyId"
 }
 export declare enum FunSmartWalletProviderKey {
     key = "funKey",

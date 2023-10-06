@@ -4,7 +4,7 @@ import type { IRelayPKP, SessionSigsMap } from "@lit-protocol/types";
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Chain } from "../../helpers";
 import { Passkey } from "./Passkey";
-import { AuthProviderInfo } from "auth/types";
+import { AuthProviderInfo } from "./types";
 export declare class LitPasskey extends Passkey {
     litAuthClient: LitAuthClient;
     webAuthnProvider: WebAuthnProvider;
