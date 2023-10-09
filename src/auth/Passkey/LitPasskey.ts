@@ -14,8 +14,7 @@ import { LIT_RELAY_API_KEY } from "../../helpers/env";
 import { Chain } from "../../helpers";
 import { DEFAULT_EXP } from "../../helpers/constants";
 import { Passkey } from "./Passkey";
-import { AuthProviderInfo } from "./types";
-
+import { AuthProviderInfo } from "..";
 export class LitPasskey extends Passkey {
   litAuthClient: LitAuthClient;
   webAuthnProvider: WebAuthnProvider;

@@ -10,12 +10,14 @@ import { LIT_RELAY_API_KEY } from "../helpers/env";
 import { Hash } from "viem";
 import { Auth } from "../auth";
 import { AlchemySmartWallet, FunSmartWallet, SmartWallet } from "../wallet";
-import { LitPasskey, TurkeyPasskey } from "../auth/Passkey";
+import { LitPasskey, TurkeyPasskey } from "../auth";
 import { SmartWalletProvider, SmartWalletProviderInfo } from "../wallet/types";
-import { AuthProvider, AuthProviderInfo } from "../auth/Passkey/types";
+import { AuthProvider, AuthProviderInfo } from "../auth";
+import { validateSnowballAPIKey } from "../helpers/keys";
 
 export class Snowball {
-  private apiKey: string;
+  apiKey: string;
+  isApiKeyValid: boolean = false;
   private chain: Chain;
   private authProviderInfo: AuthProviderInfo;
   private smartWalletProviderInfo: SmartWalletProviderInfo;
@@ -46,6 +48,7 @@ export class Snowball {
     this.smartWallet = this.initSmartWallet();
   }
 
+  @CheckApiKey
   private initAuth(): Auth {
     switch (this.authProviderInfo.name) {
       case AuthProvider.lit:
@@ -55,6 +58,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   private initSmartWallet(): SmartWallet {
     switch (this.smartWalletProviderInfo.name) {
       case SmartWalletProvider.alchemy:
@@ -64,6 +68,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async register(username: string): Promise<void> {
     try {
       return await this.auth.register(username);
@@ -72,6 +77,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async authenticate(): Promise<void> {
     try {
       return await this.auth.authenticate();
@@ -80,6 +86,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async getEthersWallet(): Promise<PKPEthersWallet> {
     try {
       return await this.auth.getEthersWallet();
@@ -88,6 +95,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async switchChain(chain: Chain) {
     try {
       this.chain = chain;
@@ -97,6 +105,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async getAddress(): Promise<Address> {
     try {
       return await this.smartWallet.getAddress();
@@ -105,6 +114,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async sendUserOperation(
     targetAddress: Address,
     data: Hex,
@@ -123,6 +133,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async waitForUserOperationTransaction(hash: Hash): Promise<Hash> {
     try {
       return await this.smartWallet.waitForUserOperationTransaction(hash);
@@ -131,6 +142,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async getUserOperationByHash(hash: Hash): Promise<UserOperationResponse> {
     try {
       return await this.smartWallet.getUserOperationByHash(hash);
@@ -139,6 +151,7 @@ export class Snowball {
     }
   }
 
+  @CheckApiKey
   async getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt> {
     try {
       return await this.smartWallet.getUserOperationReceipt(hash);
@@ -146,4 +159,23 @@ export class Snowball {
       return Promise.reject(`getUserOperationReceipt failed ${error}`);
     }
   }
+}
+
+function CheckApiKey(
+  target: Object,
+  propertyKey: string,
+  descriptor: TypedPropertyDescriptor<any>
+) {
+  const originalMethod = descriptor.value;
+
+  descriptor.value = async function (...args: any[]) {
+    const instance = this as Snowball;
+    instance.isApiKeyValid = await validateSnowballAPIKey(instance.apiKey);
+    if (!instance.isApiKeyValid) {
+      throw new Error("Invalid API Key");
+    }
+    return originalMethod.apply(this, args);
+  };
+
+  return descriptor;
 }
