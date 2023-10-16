@@ -10,9 +10,9 @@ import { LIT_RELAY_API_KEY } from "../helpers/env";
 import { Hash } from "viem";
 import { Auth } from "../auth";
 import { AlchemySmartWallet, FunSmartWallet, SmartWallet } from "../wallet";
-import { LitPasskey, TurkeyPasskey } from "../auth/Passkey";
+import { LitPasskey, TurkeyPasskey } from "../auth";
 import { SmartWalletProvider, SmartWalletProviderInfo } from "../wallet/types";
-import { AuthProvider, AuthProviderInfo } from "../auth/Passkey/types";
+import { AuthProvider, AuthProviderInfo } from "../auth";
 
 export class Snowball {
   private apiKey: string;
