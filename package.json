@@ -6,8 +6,9 @@
   "types": "./lib/index.d.ts",
   "license": "LGPL-3.0-or-later",
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "yarn run build",
+    "build": "yarn clean && tsc",
+    "prepublishOnly": "yarn clean && yarn run build",
+    "clean": "rm -rf ./lib",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --fix --ext .ts src"
   },
@@ -16,7 +17,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "description": "snowball ts sdk",
-  "repository": "https://github.com/snowball-tools/snowball-ts-auth",
+  "repository": "https://github.com/snowball-tools/snowball-ts-sdk",
   "keywords": [
     "ts",
     "passkeys",
@@ -26,9 +27,9 @@
     "lib": "lib"
   },
   "bugs": {
-    "url": "https://github.com/snowball-tools/snowball-ts-auth/issues"
+    "url": "https://github.com/snowball-tools/snowball-ts-sdk/issues"
   },
-  "homepage": "https://github.com/snowball-tools/snowball-ts-auth#readme",
+  "homepage": "https://github.com/snowball-tools/snowball-ts-sdk#readme",
   "private": false,
   "dependencies": {
     "@alchemy/aa-alchemy": "0.1.0-alpha.28",

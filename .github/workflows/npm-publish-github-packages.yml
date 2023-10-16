@@ -1,19 +1,46 @@
-name: npm publish
+name: Publish new package
 
 on:
-  release:
-    types: [created]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Flag to publish new package"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
-  build:
+  build_and_test:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: "16"
-          registry-url: "https://registry.npmjs.org"
-      - run: yarn install
-      - run: yarn publish --access public
+          node-version: "18.10"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn build
+
+  deploy:
+    name: Deploy
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    if: inputs.publish
+    steps:
+      - name: Set Github User Details
+        run: |
+          git config --global user.name "Alchemy Bot"
+          git config --global user.email "alchemy-bot@alchemy.com"
+
+      - name: Set NPM Permissions
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+
+      - name: Publish using yarn
+        run: yarn publish --access public
