@@ -1,43 +1,18 @@
-name: Publish new package
-
+name: Publish package to npmjs
 on:
-  workflow_dispatch:
-    inputs:
-      publish:
-        description: "Flag to publish new package"
-        required: true
-        default: false
-        type: boolean
-
+  release:
+    types: [published]
 jobs:
-  build_and_test:
-    name: Build and Test
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
-
-      - name: Install dependencies
-        run: yarn
-
-      - name: Build
-        run: yarn build
-
-  deploy:
-    name: Deploy
-    needs: build_and_test
-    runs-on: ubuntu-latest
-    if: inputs.publish
-    steps:
-      - name: Set Github User Details
-        run: |
-          git config --global user.name "VPhung24"
-          git config --global user.email "dev+github@vivianphung.com"
-
-      - name: Set NPM Permissions
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@snowballtools"
+      - run: yarn
+      - run: yarn npm publish
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-
-      - name: Publish using yarn
-        run: yarn publish --access public
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
