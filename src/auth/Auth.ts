@@ -1,6 +1,6 @@
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import type { Chain } from "../helpers/chains";
-import { AuthProviderInfo } from ".";
+import { AuthProviderInfo } from "./passkey";
 
 export abstract class Auth {
   authProviderInfo: AuthProviderInfo;

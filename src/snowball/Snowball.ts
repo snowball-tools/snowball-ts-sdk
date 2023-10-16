@@ -4,15 +4,24 @@ import type {
   UserOperationReceipt,
   UserOperationResponse,
 } from "@alchemy/aa-core";
-import type { Chain } from "../helpers/chains";
+import type { Chain } from "../helpers";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
 import { Hash } from "viem";
-import { Auth } from "../auth";
-import { AlchemySmartWallet, FunSmartWallet, SmartWallet } from "../wallet";
-import { LitPasskey, TurkeyPasskey } from "../auth";
-import { SmartWalletProvider, SmartWalletProviderInfo } from "../wallet/types";
-import { AuthProvider, AuthProviderInfo } from "../auth";
+import {
+  AlchemySmartWallet,
+  FunSmartWallet,
+  SmartWallet,
+  SmartWalletProvider,
+  SmartWalletProviderInfo,
+} from "../wallet";
+import {
+  LitPasskey,
+  TurkeyPasskey,
+  AuthProvider,
+  AuthProviderInfo,
+  Auth,
+} from "../auth";
 
 export class Snowball {
   private apiKey: string;
