@@ -4,6 +4,7 @@
     "lib": ["ES2022", "dom"],
     "module": "commonjs",
     "outDir": "./lib",
+    "rootDir": "./src",
     "strict": true,
     "sourceMap": true,
     "declaration": true,
@@ -23,6 +24,5 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./lib"]
 }

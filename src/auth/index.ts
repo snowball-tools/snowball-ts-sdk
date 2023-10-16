@@ -1,3 +1,3 @@
 export { Auth } from "./Auth";
 
-export * from "./Passkey";
+export * from "./passkey";
