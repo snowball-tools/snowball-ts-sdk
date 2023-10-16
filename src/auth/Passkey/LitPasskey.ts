@@ -11,12 +11,12 @@ import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { ProviderType } from "@lit-protocol/constants";
 import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers";
 import { LIT_RELAY_API_KEY } from "../../helpers/env";
-import { Chain } from "../../helpers";
+import { Chain } from "../../helpers/chains";
 import { DEFAULT_EXP } from "../../helpers/constants";
-import { SnowballPasskey } from "./SnowballPasskey";
-import { AuthProviderInfo } from "./types";
+import { Passkey } from "./Passkey";
+import { AuthProviderInfo } from "../types";
 
-export class LitPasskey extends SnowballPasskey {
+export class LitPasskey extends Passkey {
   litAuthClient: LitAuthClient;
   webAuthnProvider: WebAuthnProvider;
   litNodeClient: LitNodeClient;

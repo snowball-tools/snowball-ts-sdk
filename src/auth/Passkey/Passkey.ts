@@ -1,7 +1,7 @@
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Auth } from "../Auth";
 
-export abstract class SnowballPasskey extends Auth {
+export abstract class Passkey extends Auth {
   async register(username: string): Promise<void> {
     try {
       await this.registerPasskey(username);

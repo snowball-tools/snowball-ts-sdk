@@ -7,9 +7,9 @@ import {
 } from "@alchemy/aa-core";
 import type { TypedDataField } from "ethers";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import { Chain } from "../helpers";
+import { Chain } from "../helpers/chains";
 import { Hash, Hex } from "viem";
-import { Auth } from "../auth";
+import { Auth } from "../auth/Auth";
 import { SmartWalletProviderInfo } from "./types";
 
 export abstract class SmartWallet {

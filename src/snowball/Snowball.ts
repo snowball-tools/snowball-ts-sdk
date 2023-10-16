@@ -4,24 +4,20 @@ import type {
   UserOperationReceipt,
   UserOperationResponse,
 } from "@alchemy/aa-core";
-import type { Chain } from "../helpers";
+import type { Chain } from "../helpers/chains";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
 import { Hash } from "viem";
-import {
-  AlchemySmartWallet,
-  FunSmartWallet,
-  SmartWallet,
-  SmartWalletProvider,
-  SmartWalletProviderInfo,
-} from "../wallet";
-import {
-  LitPasskey,
-  TurkeyPasskey,
-  AuthProvider,
-  AuthProviderInfo,
-  Auth,
-} from "../auth";
+import { AlchemySmartWallet } from "../wallet/AlchemySmartWallet";
+import { FunSmartWallet } from "../wallet/FunSmartWallet";
+import { SmartWallet } from "../wallet/SmartWallet";
+import type { SmartWalletProviderInfo } from "../wallet/types";
+import { SmartWalletProvider } from "../wallet/base";
+import { LitPasskey } from "../auth/passkey/LitPasskey";
+import { TurkeyPasskey } from "../auth/passkey/TurkeyPasskey";
+import type { AuthProviderInfo } from "../auth/types";
+import { Auth } from "../auth/Auth";
+import { AuthProvider } from "../auth/base";
 
 export class Snowball {
   private apiKey: string;
@@ -57,19 +53,21 @@ export class Snowball {
 
   private initAuth(): Auth {
     switch (this.authProviderInfo.name) {
-      case AuthProvider.lit:
-        return new LitPasskey(this.chain, this.authProviderInfo);
       case AuthProvider.turnkey:
         return new TurkeyPasskey(this.chain, this.authProviderInfo);
+      default:
+      case AuthProvider.lit:
+        return new LitPasskey(this.chain, this.authProviderInfo);
     }
   }
 
   private initSmartWallet(): SmartWallet {
     switch (this.smartWalletProviderInfo.name) {
-      case SmartWalletProvider.alchemy:
-        return new AlchemySmartWallet(this.auth, this.smartWalletProviderInfo);
       case SmartWalletProvider.fun:
         return new FunSmartWallet(this.auth, this.smartWalletProviderInfo);
+      default:
+      case SmartWalletProvider.alchemy:
+        return new AlchemySmartWallet(this.auth, this.smartWalletProviderInfo);
     }
   }
 
