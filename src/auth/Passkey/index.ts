@@ -1,4 +1,4 @@
-export { Passkey } from "./Passkey";
+export { SnowballPasskey } from "./SnowballPasskey";
 export { LitPasskey } from "./LitPasskey";
 export { TurkeyPasskey } from "./TurkeyPasskey";
 

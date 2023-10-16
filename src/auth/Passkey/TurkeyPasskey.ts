@@ -1,8 +1,8 @@
 /* eslint-disable */
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import { Passkey } from "./Passkey";
+import { SnowballPasskey } from "./SnowballPasskey";
 
-export class TurkeyPasskey extends Passkey {
+export class TurkeyPasskey extends SnowballPasskey {
   registerPasskey(_username: string): Promise<void> {
     throw new Error("Method not implemented.");
   }

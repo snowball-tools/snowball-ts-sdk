@@ -13,10 +13,10 @@ import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers";
 import { LIT_RELAY_API_KEY } from "../../helpers/env";
 import { Chain } from "../../helpers";
 import { DEFAULT_EXP } from "../../helpers/constants";
-import { Passkey } from "./Passkey";
+import { SnowballPasskey } from "./SnowballPasskey";
 import { AuthProviderInfo } from "./types";
 
-export class LitPasskey extends Passkey {
+export class LitPasskey extends SnowballPasskey {
   litAuthClient: LitAuthClient;
   webAuthnProvider: WebAuthnProvider;
   litNodeClient: LitNodeClient;

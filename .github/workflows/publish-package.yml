@@ -31,8 +31,8 @@ jobs:
     steps:
       - name: Set Github User Details
         run: |
-          git config --global user.name "Alchemy Bot"
-          git config --global user.email "alchemy-bot@alchemy.com"
+          git config --global user.name "VPhung24"
+          git config --global user.email "dev+github@vivianphung.com"
 
       - name: Set NPM Permissions
         env:
