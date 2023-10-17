@@ -7,7 +7,7 @@
   "license": "LGPL-3.0-or-later",
   "scripts": {
     "build": "yarn clean && tsc",
-    "prepublishOnly": "yarn clean && yarn run build",
+    "prepublishOnly": "yarn run build",
     "clean": "rm -rf ./lib",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --fix --ext .ts src"
