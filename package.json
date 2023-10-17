@@ -17,7 +17,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "description": "snowball ts sdk",
-  "repository": "https://github.com/snowball-tools/snowball-ts-sdk",
+  "repository": "https://github.com/snowball-tools/snowball-ts-sdk.git",
   "keywords": [
     "ts",
     "passkeys",
