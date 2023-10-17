@@ -1,6 +1,6 @@
 {
   "name": "@snowballtools/snowball-ts-sdk",
-  "version": "0.1.9-alpha.3",
+  "version": "0.1.9-alpha.4",
   "author": "Snowball Tools Inc. <viv@snowballtools.xyz>",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -14,7 +14,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "description": "snowball ts sdk",
   "repository": "https://github.com/snowball-tools/snowball-ts-sdk",

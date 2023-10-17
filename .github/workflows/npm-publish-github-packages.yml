@@ -1,8 +1,13 @@
 name: Node.js Github Package
 
 on:
-  release:
-    types: [created]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Flag to publish new package"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build:

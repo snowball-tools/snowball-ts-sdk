@@ -1,7 +1,14 @@
 name: Publish package to npmjs
+
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Flag to publish new package"
+        required: true
+        default: false
+        type: boolean
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "20"
-          registry-url: "https://registry.npmjs.org"
+          registry-url: "https://npm.pkg.github.com/"
           scope: "@snowballtools"
       - run: yarn
       - run: yarn publish
