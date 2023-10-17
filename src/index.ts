@@ -20,3 +20,9 @@ export {
 
 export type * from "./helpers/constants";
 export type * from "./helpers/chains";
+export {
+  CHAINS,
+  viemChain,
+  getAlchemyNetwork,
+  getAlchemyChain,
+} from "./helpers/chains";
