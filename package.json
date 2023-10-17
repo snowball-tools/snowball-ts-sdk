@@ -7,14 +7,14 @@
   "license": "LGPL-3.0-or-later",
   "scripts": {
     "build": "yarn clean && tsc",
-    "prepublishOnly": "yarn run build",
+    "prepublishOnly": "yarn clean && yarn run build",
     "clean": "rm -rf ./lib",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --fix --ext .ts src"
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "description": "snowball ts sdk",
   "repository": "https://github.com/snowball-tools/snowball-ts-sdk.git",
