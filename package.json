@@ -1,6 +1,6 @@
 {
   "name": "@snowballtools/snowball-ts-sdk",
-  "version": "0.2.0-alpha.5",
+  "version": "0.2.0-alpha.6",
   "author": "Snowball Tools Inc. <viv@snowballtools.xyz>",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -41,7 +41,7 @@
     "@lit-protocol/auth-helpers": "^2.2.50",
     "@lit-protocol/constants": "^2.2.50",
     "@lit-protocol/encryption": "^2.2.50",
-    "@lit-protocol/lit-auth-client": "^2.2.50",
+    "@lit-protocol/lit-auth-client": "^2.2.61",
     "@lit-protocol/lit-node-client": "^2.2.54",
     "@lit-protocol/pkp-ethers": "^2.2.50",
     "@lit-protocol/types": "^2.2.50",
