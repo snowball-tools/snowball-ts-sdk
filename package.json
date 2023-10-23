@@ -1,6 +1,6 @@
 {
   "name": "@snowballtools/snowball-ts-sdk",
-  "version": "0.2.0-alpha.9",
+  "version": "0.2.0-alpha.22",
   "author": "Snowball Tools Inc. <viv@snowballtools.xyz>",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
