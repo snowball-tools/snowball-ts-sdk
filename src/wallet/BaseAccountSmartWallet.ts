@@ -9,7 +9,7 @@ import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Address, Hash, SignTypedDataParameters } from "viem";
 import { Auth } from "../auth/Auth";
 import { SmartWalletProviderInfo } from "../../lib/wallet/types";
-export abstract class LightAccount {
+export abstract class BaseAccountSmartWallet {
   ethersWallet: PKPEthersWallet | undefined;
   auth: Auth;
   private _baseAccount: ISmartContractAccount | undefined;
@@ -68,8 +68,8 @@ export abstract class LightAccount {
           return nonce;
         },
 
-        signMessage: async (msg: Uint8Array) => {
-          return (await this._baseAccount!.signMessage(msg)) as Address;
+        signMessage: async (msg: Uint8Array): Promise<Hex> => {
+          return await this._baseAccount!.signMessage(msg);
         },
 
         signTypedData: async (params: SignTypedDataParams) => {
@@ -110,7 +110,7 @@ export abstract class LightAccount {
       };
 
       this._baseAccount = baseAccount;
-      return this._baseAccount;
+      return baseAccount;
     } catch (error) {
       return Promise.reject(`Get Base Account failed ${JSON.stringify(error)}`);
     }
