@@ -5,7 +5,12 @@ import {
   SimpleSmartContractAccount,
   UserOperationResponse,
   UserOperationReceipt,
+  BaseSmartContractAccount,
 } from "@alchemy/aa-core";
+import {
+  LightSmartContractAccount,
+  getDefaultLightAccountFactoryAddress,
+} from "@alchemy/aa-accounts";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { getAlchemyChain } from "../helpers/chains";
 // TODO: make sure there are no operations on smart wallet in this entity
@@ -69,7 +74,6 @@ export class AlchemySmartWallet extends BaseAccountSmartWallet {
 
   private async initAlchemyProvider(): Promise<AlchemyProvider> {
     try {
-      const owner = await this.getBaseAccount();
       this.provider = new AlchemyProvider({
         chain: super.chain.chainId,
         entryPointAddress: super.chain.entryPointAddress,
@@ -77,21 +81,17 @@ export class AlchemySmartWallet extends BaseAccountSmartWallet {
           this.smartWalletProviderInfo.apiKeys[
             `alchemyKey-${super.chain.name.toLowerCase()}`
           ],
-      }).connect(
-        (rpcClient) =>
-          new SimpleSmartContractAccount({
-            owner: owner,
-            entryPointAddress: super.chain.entryPointAddress,
-            chain: getAlchemyChain(super.chain),
-            factoryAddress: super.chain.factoryAddress,
-            rpcClient,
-          })
-      );
+      }).connect((provider) => {
+        return new LightSmartContractAccount({
+          owner: null, // Replace with the actual owner value
+          chain: super.chain, // Replace with the actual chain value
+          rpcClient: rpcClient, // Replace with the actual rpcClient value
+          factoryAddress: null, // Replace with the actual factoryAddress value
+        });
+      });
       return this.provider;
     } catch (error) {
-      return Promise.reject(
-        `initAlchemyProvider failed ${JSON.stringify(error)}`
-      );
+      throw new Error(`initAlchemyProvider failed ${JSON.stringify(error)}`);
     }
   }
 

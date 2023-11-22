@@ -3,7 +3,12 @@ import {
   type Hex,
   ISmartContractAccount,
   BatchUserOperationCallData,
+  BaseSmartContractAccount,
 } from "@alchemy/aa-core";
+import {
+  LightSmartContractAccount,
+  getDefaultLightAccountFactoryAddress,
+} from "@alchemy/aa-accounts";
 import { TypedDataField } from "ethers";
 import { Chain } from "../helpers/chains";
 
@@ -15,6 +20,7 @@ export abstract class BaseAccountSmartWallet {
   ethersWallet: PKPEthersWallet | undefined;
   auth: Auth;
   private _baseAccount: ISmartContractAccount | undefined;
+  private _lightAccount: LightSmartContractAccount | undefined;
   address: Address | undefined;
   smartWalletProviderInfo: SmartWalletProviderInfo;
 
@@ -23,9 +29,9 @@ export abstract class BaseAccountSmartWallet {
     this.smartWalletProviderInfo = smartWalletProviderInfo;
   }
 
-  async getBaseAccount(): Promise<ISmartContractAccount> {
-    if (this._baseAccount !== undefined) {
-      return this._baseAccount;
+  async getBaseAccount(): Promise<BaseSmartContractAccount> {
+    if (this._lightAccount !== undefined) {
+      return this._lightAccount;
     }
 
     try {
@@ -33,14 +39,21 @@ export abstract class BaseAccountSmartWallet {
         this.ethersWallet = await this.auth.getEthersWallet();
       }
 
-      const baseAccount: ISmartContractAccount = {
+      const baseAccount: BaseSmartContractAccount = {
+        //spread from lightsmartcontractaccount
+
+        // getOwnerAddress: async (): Promise<Address> => {
+        //   const ownerAddress = await this._lightAccount!.getOwnerAddress();
+        //   return ownerAddress;
+        // },
+
         getInitCode: async (): Promise<Hex> => {
-          const initCode = await this._baseAccount!.getInitCode();
+          const initCode = await this._lightAccount!.getInitCode();
           return initCode;
         },
 
         getDummySignature: (): Hex => {
-          const dummySignature = this._baseAccount!.getDummySignature();
+          const dummySignature = this._lightAccount!.getDummySignature();
           return dummySignature;
         },
 
@@ -49,8 +62,8 @@ export abstract class BaseAccountSmartWallet {
           value: bigint,
           data: string
         ): Promise<Hex> => {
-          const encodedExecute = await this._baseAccount!.encodeExecute(
-            target,
+          const encodedExecute = await this._lightAccount!.encodeExecute(
+            `0x${target}`, // Add '0x' prefix to the target
             value,
             data
           );
