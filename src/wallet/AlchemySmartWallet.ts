@@ -8,9 +8,11 @@ import {
 } from "@alchemy/aa-core";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { getAlchemyChain } from "../helpers/chains";
-import { SmartWallet } from "./SmartWallet";
+// TODO: make sure there are no operations on smart wallet in this entity
+//import { SmartWallet } from "./SmartWallet";
+import { BaseAccountSmartWallet } from "./BaseAccountSmartWallet";
 
-export class AlchemySmartWallet extends SmartWallet {
+export class AlchemySmartWallet extends BaseAccountSmartWallet {
   private provider: AlchemyProvider | undefined;
 
   async getAddress(): Promise<Address> {
@@ -19,8 +21,8 @@ export class AlchemySmartWallet extends SmartWallet {
     }
 
     try {
-      const owner = await super.getSimpleAccountOwner();
-      this.address = await owner.getAddress();
+      const baseAccount = await super.getBaseAccount();
+      this.address = await baseAccount.getAddress();
       return this.address;
     } catch (error) {
       throw new Error(`Error getting address ${JSON.stringify(error)}`);
@@ -67,7 +69,7 @@ export class AlchemySmartWallet extends SmartWallet {
 
   private async initAlchemyProvider(): Promise<AlchemyProvider> {
     try {
-      const owner = await this.getSimpleAccountOwner();
+      const owner = await this.getBaseAccount();
       this.provider = new AlchemyProvider({
         chain: super.chain.chainId,
         entryPointAddress: super.chain.entryPointAddress,

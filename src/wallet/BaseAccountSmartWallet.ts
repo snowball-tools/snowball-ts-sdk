@@ -5,20 +5,22 @@ import {
   BatchUserOperationCallData,
 } from "@alchemy/aa-core";
 import { TypedDataField } from "ethers";
+import { Chain } from "../helpers/chains";
+
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Address, Hash, SignTypedDataParameters } from "viem";
 import { Auth } from "../auth/Auth";
-import { SmartWalletProviderInfo } from "../../lib/wallet/types";
+import { SmartWalletProviderInfo } from "./types";
 export abstract class BaseAccountSmartWallet {
   ethersWallet: PKPEthersWallet | undefined;
   auth: Auth;
   private _baseAccount: ISmartContractAccount | undefined;
   address: Address | undefined;
-  SmartWalletProviderInfo: SmartWalletProviderInfo;
+  smartWalletProviderInfo: SmartWalletProviderInfo;
 
-  constructor(auth: Auth, SmartWalletProviderInfo: SmartWalletProviderInfo) {
+  constructor(auth: Auth, smartWalletProviderInfo: SmartWalletProviderInfo) {
     this.auth = auth;
-    this.SmartWalletProviderInfo = SmartWalletProviderInfo;
+    this.smartWalletProviderInfo = smartWalletProviderInfo;
   }
 
   async getBaseAccount(): Promise<ISmartContractAccount> {
@@ -114,5 +116,8 @@ export abstract class BaseAccountSmartWallet {
     } catch (error) {
       return Promise.reject(`Get Base Account failed ${JSON.stringify(error)}`);
     }
+  }
+  public get chain(): Chain {
+    return this.auth.chain;
   }
 }
