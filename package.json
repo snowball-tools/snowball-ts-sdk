@@ -32,8 +32,8 @@
   "homepage": "https://github.com/snowball-tools/snowball-ts-sdk#readme",
   "private": false,
   "dependencies": {
-    "@alchemy/aa-alchemy": "0.1.0-alpha.28",
-    "@alchemy/aa-core": "0.1.0-alpha.28",
+    "@alchemy/aa-alchemy": "^1.2.0",
+    "@alchemy/aa-core": "^1.2.0",
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/hash": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
@@ -50,7 +50,7 @@
     "alchemy-sdk": "^2.10.0",
     "ethers": "^5.5.1",
     "tsdom": "^0.6.9",
-    "viem": "^1.9.3"
+    "viem": "^1.19.8"
   },
   "devDependencies": {
     "@alchemy/aa-accounts": "^1.2.0",

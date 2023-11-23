@@ -4,6 +4,9 @@ import {
   ISmartContractAccount,
   BatchUserOperationCallData,
   BaseSmartContractAccount,
+  SmartAccountSigner,
+  LocalAccountSigner,
+  WalletClientSigner,
 } from "@alchemy/aa-core";
 import {
   LightSmartContractAccount,
@@ -13,7 +16,14 @@ import { TypedDataField } from "ethers";
 import { Chain } from "../helpers/chains";
 
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import { Address, Hash, SignTypedDataParameters } from "viem";
+import {
+  Address,
+  Hash,
+  SignTypedDataParameters,
+  createWalletClient,
+  custom,
+} from "viem";
+
 import { Auth } from "../auth/Auth";
 import { SmartWalletProviderInfo } from "./types";
 export abstract class BaseAccountSmartWallet {
@@ -24,9 +34,19 @@ export abstract class BaseAccountSmartWallet {
   address: Address | undefined;
   smartWalletProviderInfo: SmartWalletProviderInfo;
 
+  smartAccountSigner: LocalAccountSigner | undefined;
+
   constructor(auth: Auth, smartWalletProviderInfo: SmartWalletProviderInfo) {
     this.auth = auth;
     this.smartWalletProviderInfo = smartWalletProviderInfo;
+  }
+
+  // return the owner of the smart wallet
+  async getAccountSigner(): Promise<SmartAccountSigner> {
+    this.smartAccountSigner = new WalletClientSigner(
+      createWalletClient({ transport: custom(pkpWallet.rpcProvider) }),
+      "lit"
+    );
   }
 
   async getBaseAccount(): Promise<BaseSmartContractAccount> {

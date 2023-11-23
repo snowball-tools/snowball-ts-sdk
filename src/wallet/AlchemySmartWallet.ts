@@ -34,6 +34,25 @@ export class AlchemySmartWallet extends BaseAccountSmartWallet {
     }
   }
 
+  private async initializeAlchemyProvider(): Promise<AlchemyProvider> {
+    // Create a provider to send user operations from your smart account
+    const provider = new AlchemyProvider({
+      // get your Alchemy API key at https://dashboard.alchemy.com
+      apiKey: "ALCHEMY_API_KEY",
+      chain,
+    }).connect(
+      (rpcClient) =>
+        new LightSmartContractAccount({
+          rpcClient,
+          owner,
+          chain,
+          factoryAddress: getDefaultLightAccountFactoryAddress(chain),
+        })
+    );
+
+    return provider;
+  }
+
   async sendUserOperation(
     targetAddress: Address,
     data: Hex,
@@ -72,28 +91,28 @@ export class AlchemySmartWallet extends BaseAccountSmartWallet {
     }
   }
 
-  private async initAlchemyProvider(): Promise<AlchemyProvider> {
-    try {
-      this.provider = new AlchemyProvider({
-        chain: super.chain.chainId,
-        entryPointAddress: super.chain.entryPointAddress,
-        apiKey:
-          this.smartWalletProviderInfo.apiKeys[
-            `alchemyKey-${super.chain.name.toLowerCase()}`
-          ],
-      }).connect((provider) => {
-        return new LightSmartContractAccount({
-          owner: null, // Replace with the actual owner value
-          chain: super.chain, // Replace with the actual chain value
-          rpcClient: rpcClient, // Replace with the actual rpcClient value
-          factoryAddress: null, // Replace with the actual factoryAddress value
-        });
-      });
-      return this.provider;
-    } catch (error) {
-      throw new Error(`initAlchemyProvider failed ${JSON.stringify(error)}`);
-    }
-  }
+  // private async initAlchemyProvider(): Promise<AlchemyProvider> {
+  //   try {
+  //     this.provider = new AlchemyProvider({
+  //       chain: super.chain.chainId,
+  //       entryPointAddress: super.chain.entryPointAddress,
+  //       apiKey:
+  //         this.smartWalletProviderInfo.apiKeys[
+  //           `alchemyKey-${super.chain.name.toLowerCase()}`
+  //         ],
+  //     }).connect((provider) => {
+  //       return new LightSmartContractAccount({
+  //         owner: null, // Replace with the actual owner value
+  //         chain: super.chain, // Replace with the actual chain value
+  //         rpcClient: rpcClient, // Replace with the actual rpcClient value
+  //         factoryAddress: null, // Replace with the actual factoryAddress value
+  //       }) as unknown as BaseSmartContractAccount;
+  //     });
+  //     return this.provider;
+  //   } catch (error) {
+  //     throw new Error(`initAlchemyProvider failed ${JSON.stringify(error)}`);
+  //   }
+  // }
 
   async waitForUserOperationTransaction(
     hash: `0x${string}`
