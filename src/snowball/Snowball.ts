@@ -1,13 +1,21 @@
-import type {
-  Address,
-  Hex,
-  UserOperationReceipt,
-  UserOperationResponse,
+import {
+  type Address,
+  type Hex,
+  type UserOperationReceipt,
+  type UserOperationResponse,
+  type SmartAccountSigner,
+  WalletClientSigner,
 } from "@alchemy/aa-core";
-import type { Chain } from "../helpers/chains";
-import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
+import { viemChain, type Chain } from "../helpers/chains";
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
-import { Hash } from "viem";
+import {
+  Hash,
+  RpcTransactionRequest,
+  SignTypedDataParameters,
+  createWalletClient,
+  custom,
+} from "viem";
 import { AlchemySmartWallet } from "../wallet/AlchemySmartWallet";
 import { FunSmartWallet } from "../wallet/FunSmartWallet";
 import { SmartWallet } from "../wallet/SmartWallet";
@@ -18,6 +26,14 @@ import { TurkeyPasskey } from "../auth/passkey/TurkeyPasskey";
 import type { AuthProviderInfo } from "../auth/types";
 import { Auth } from "../auth/Auth";
 import { AuthProvider } from "../auth/base";
+//import { BaseAccountSmartWallet } from "../wallet/BaseAccountSmartWallet";
+
+import { AlchemyProvider } from "@alchemy/aa-alchemy";
+import { ChainConstants } from "viem/_types/types/chain";
+import {
+  LightSmartContractAccount,
+  getDefaultLightAccountFactoryAddress,
+} from "@alchemy/aa-accounts";
 
 export class Snowball {
   private apiKey: string;
@@ -26,7 +42,9 @@ export class Snowball {
   private smartWalletProviderInfo: SmartWalletProviderInfo;
 
   private auth: Auth;
+  //TODO: replace all SmartWallet instances with baseAccountSmartWallet
   private smartWallet: SmartWallet;
+  //private baseAccountSmartWallet: BaseAccountSmartWallet;
 
   constructor(
     apiKey: string,
@@ -61,6 +79,21 @@ export class Snowball {
     }
   }
 
+  private initLitSignerAccount(): SmartAccountSigner {
+    const provider = new AlchemyProvider({
+      apiKey: LIT_RELAY_API_KEY,
+      chain: viemChain(this.chain),
+    });
+
+    return new WalletClientSigner(
+      createWalletClient({
+        transport: custom(provider),
+      }),
+      "lit"
+    );
+  }
+  //TODO
+  // update to return LightSmartContractAccount
   private initSmartWallet(): SmartWallet {
     switch (this.smartWalletProviderInfo.name) {
       case SmartWalletProvider.fun:
@@ -69,6 +102,26 @@ export class Snowball {
       case SmartWalletProvider.alchemy:
         return new AlchemySmartWallet(this.auth, this.smartWalletProviderInfo);
     }
+  }
+
+  private initAlchemyLightAccount(): Promise<Address> {
+    const provider = new AlchemyProvider({
+      apiKey: LIT_RELAY_API_KEY,
+      chain: viemChain(this.chain),
+    }).connect(
+      (rpcClient) =>
+        new LightSmartContractAccount({
+          chain: viemChain(this.chain),
+          owner: this.initLitSignerAccount(),
+          factoryAddress: getDefaultLightAccountFactoryAddress(
+            viemChain(this.chain)
+          ),
+          rpcClient: rpcClient,
+        })
+    );
+
+    const address = provider.getAddress();
+    return address;
   }
 
   async register(username: string): Promise<void> {

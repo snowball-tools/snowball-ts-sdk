@@ -20,32 +20,32 @@ import { BaseAccountSmartWallet } from "./BaseAccountSmartWallet";
 export class AlchemySmartWallet extends BaseAccountSmartWallet {
   private provider: AlchemyProvider | undefined;
 
-  async getAddress(): Promise<Address> {
-    if (this.address) {
-      return this.address;
-    }
+  // async getAccountOwner(): Promise<Address> {
+  //   if (this.address) {
+  //     return this.address;
+  //   }
 
-    try {
-      const baseAccount = await super.getBaseAccount();
-      this.address = await baseAccount.getAddress();
-      return this.address;
-    } catch (error) {
-      throw new Error(`Error getting address ${JSON.stringify(error)}`);
-    }
-  }
+  //   try {
+  //     const baseAccount = await super.getBaseAccount();
+  //     this.address = await baseAccount.getAddress();
+  //     return this.address;
+  //   } catch (error) {
+  //     throw new Error(`Error getting address ${JSON.stringify(error)}`);
+  //   }
+  // }
 
-  private async initializeAlchemyProvider(): Promise<AlchemyProvider> {
+  private async initAlchemyProvider(): Promise<AlchemyProvider> {
     // Create a provider to send user operations from your smart account
     const provider = new AlchemyProvider({
       // get your Alchemy API key at https://dashboard.alchemy.com
       apiKey: "ALCHEMY_API_KEY",
-      chain,
+      chain: getAlchemyChain(this.chain),
     }).connect(
       (rpcClient) =>
         new LightSmartContractAccount({
-          rpcClient,
-          owner,
-          chain,
+          rpcClient: rpcClient,
+          owner: this.getAccountSigner(),
+          chain: getAlchemyChain(this.chain),
           factoryAddress: getDefaultLightAccountFactoryAddress(chain),
         })
     );

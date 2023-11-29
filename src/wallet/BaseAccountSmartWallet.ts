@@ -34,7 +34,7 @@ export abstract class BaseAccountSmartWallet {
   address: Address | undefined;
   smartWalletProviderInfo: SmartWalletProviderInfo;
 
-  smartAccountSigner: LocalAccountSigner | undefined;
+  smartAccountSigner: SmartAccountSigner | undefined;
 
   constructor(auth: Auth, smartWalletProviderInfo: SmartWalletProviderInfo) {
     this.auth = auth;
@@ -42,12 +42,12 @@ export abstract class BaseAccountSmartWallet {
   }
 
   // return the owner of the smart wallet
-  async getAccountSigner(): Promise<SmartAccountSigner> {
-    this.smartAccountSigner = new WalletClientSigner(
-      createWalletClient({ transport: custom(pkpWallet.rpcProvider) }),
-      "lit"
-    );
-  }
+  // async getAccountSigner(): Promise<SmartAccountSigner> {
+  //   this.smartAccountSigner = new WalletClientSigner(
+  //     createWalletClient({ transport: custom(this.ethersWallet?.rpcProvider) }),
+  //     "lit"
+  //   );
+  // }
 
   async getBaseAccount(): Promise<BaseSmartContractAccount> {
     if (this._lightAccount !== undefined) {
