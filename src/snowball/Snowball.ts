@@ -76,10 +76,12 @@ export class Snowball {
         return new FunSmartWallet(this.auth, this.smartWalletProviderInfo);
       default:
       case SmartWalletProvider.alchemy:
+        // TODO: this should return a AlchemySmartWallet with the new light account integration
         return new AlchemySmartWallet(this.auth, this.smartWalletProviderInfo);
     }
   }
 
+  // example of functioning lit signer instantiation
   private initLitSignerAccount(): SmartAccountSigner {
     const provider = new AlchemyProvider({
       apiKey: this.apiKey,
@@ -94,6 +96,7 @@ export class Snowball {
     );
   }
 
+  // example of functioning light account instantiation
   async initAlchemyLightAccount(): Promise<Address> {
     const provider = new AlchemyProvider({
       apiKey: LIT_RELAY_API_KEY,

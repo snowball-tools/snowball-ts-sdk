@@ -5,8 +5,8 @@ import {
   BatchUserOperationCallData,
   BaseSmartContractAccount,
   SmartAccountSigner,
-  LocalAccountSigner,
   WalletClientSigner,
+  getDefaultEntryPointAddress,
 } from "@alchemy/aa-core";
 import {
   LightSmartContractAccount,
@@ -24,11 +24,19 @@ import {
   custom,
 } from "viem";
 
+import { viemChain } from "../helpers/chains";
+import { LIT_RELAY_API_KEY } from "../helpers/env";
+import { AlchemyProvider } from "@alchemy/aa-alchemy";
+
 import { Auth } from "../auth/Auth";
 import { SmartWalletProviderInfo } from "./types";
-export abstract class BaseAccountSmartWallet {
+import { LitSigner } from "./LitSigner";
+import { DeploymentState } from "@alchemy/aa-core/dist/types/account/base";
+
+export abstract class BaseAccountSmartWalletWrapper {
   ethersWallet: PKPEthersWallet | undefined;
   auth: Auth;
+  litSigner: LitSigner | undefined;
   private _baseAccount: ISmartContractAccount | undefined;
   private _lightAccount: LightSmartContractAccount | undefined;
   address: Address | undefined;
@@ -37,17 +45,57 @@ export abstract class BaseAccountSmartWallet {
   smartAccountSigner: SmartAccountSigner | undefined;
 
   constructor(auth: Auth, smartWalletProviderInfo: SmartWalletProviderInfo) {
+    signer: this.litSigner?.getLitSigner();
     this.auth = auth;
     this.smartWalletProviderInfo = smartWalletProviderInfo;
   }
 
-  // return the owner of the smart wallet
-  // async getAccountSigner(): Promise<SmartAccountSigner> {
-  //   this.smartAccountSigner = new WalletClientSigner(
-  //     createWalletClient({ transport: custom(this.ethersWallet?.rpcProvider) }),
-  //     "lit"
-  //   );
-  // }
+  async initAlchemyProvider(): Promise<AlchemyProvider> {
+    const provider = new AlchemyProvider({
+      apiKey: LIT_RELAY_API_KEY,
+      chain: viemChain(this.chain),
+    }).connect(
+      (rpcClient) =>
+        new LightSmartContractAccount({
+          chain: viemChain(this.chain),
+          owner: this.initLitSignerAccount(),
+          factoryAddress: getDefaultLightAccountFactoryAddress(
+            viemChain(this.chain)
+          ),
+          rpcClient: rpcClient,
+        })
+    );
+
+    return provider;
+  }
+
+  private initLitSignerAccount(): SmartAccountSigner {
+    const provider = new AlchemyProvider({
+      apiKey: LIT_RELAY_API_KEY,
+      chain: viemChain(this.chain),
+    });
+
+    return new WalletClientSigner(
+      createWalletClient({
+        transport: custom(provider),
+      }),
+      "lit"
+    );
+  }
+
+  async getAccountOwner(): Promise<Address> {
+    if (this.address) {
+      return this.address;
+    }
+
+    try {
+      const baseAccount = await this.getBaseAccount();
+      this.address = await baseAccount.getAddress();
+      return this.address;
+    } catch (error) {
+      throw new Error(`Error getting address ${JSON.stringify(error)}`);
+    }
+  }
 
   async getBaseAccount(): Promise<BaseSmartContractAccount> {
     if (this._lightAccount !== undefined) {
@@ -60,12 +108,16 @@ export abstract class BaseAccountSmartWallet {
       }
 
       const baseAccount: BaseSmartContractAccount = {
-        //spread from lightsmartcontractaccount
-
-        // getOwnerAddress: async (): Promise<Address> => {
-        //   const ownerAddress = await this._lightAccount!.getOwnerAddress();
-        //   return ownerAddress;
-        // },
+        _getAccountInitCode: undefined,
+        create6492Signature: undefined,
+        factoryAddress: getDefaultLightAccountFactoryAddress(
+          viemChain(this.chain)
+        ),
+        deploymentState: DeploymentState.UNDEFINED,
+        owner: await this.litSigner?.getLitSigner(),
+        entryPoint: undefined,
+        entryPointAddress: getDefaultEntryPointAddress(viemChain(this.chain)),
+        rpcProvider: undefined,
 
         getInitCode: async (): Promise<Hex> => {
           const initCode = await this._lightAccount!.getInitCode();
@@ -80,10 +132,10 @@ export abstract class BaseAccountSmartWallet {
         encodeExecute: async (
           target: string,
           value: bigint,
-          data: string
+          data: Hex
         ): Promise<Hex> => {
           const encodedExecute = await this._lightAccount!.encodeExecute(
-            `0x${target}`, // Add '0x' prefix to the target
+            `0x${target}`,
             value,
             data
           );
@@ -141,6 +193,35 @@ export abstract class BaseAccountSmartWallet {
 
         getAddress: async () => {
           return (await this._baseAccount!.getAddress()) as Address;
+        },
+
+        getAccountInitCode: function (): Promise<`0x${string}`> {
+          throw new Error("Function not implemented.");
+        },
+        signUserOperationHash: function (
+          uoHash: `0x${string}`
+        ): Promise<`0x${string}`> {
+          throw new Error("Function not implemented.");
+        },
+        getOwner: function (): SmartAccountSigner<any> | undefined {
+          throw new Error("Function not implemented.");
+        },
+        getFactoryAddress: function (): `0x${string}` {
+          throw new Error("Function not implemented.");
+        },
+        getEntryPointAddress: function (): `0x${string}` {
+          throw new Error("Function not implemented.");
+        },
+        isAccountDeployed: function (): Promise<boolean> {
+          throw new Error("Function not implemented.");
+        },
+        getDeploymentState: function (): Promise<DeploymentState> {
+          throw new Error("Function not implemented.");
+        },
+        parseFactoryAddressFromAccountInitCode: function (): Promise<
+          [`0x${string}`, `0x${string}`]
+        > {
+          throw new Error("Function not implemented.");
         },
       };
 
