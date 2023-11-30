@@ -98,10 +98,6 @@ export abstract class BaseAccountSmartWalletWrapper {
   }
 
   async getBaseAccount(): Promise<BaseSmartContractAccount> {
-    if (this._lightAccount !== undefined) {
-      return this._lightAccount;
-    }
-
     try {
       if (this.ethersWallet === undefined) {
         this.ethersWallet = await this.auth.getEthersWallet();
