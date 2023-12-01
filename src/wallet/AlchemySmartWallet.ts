@@ -2,16 +2,30 @@ import {
   type Address,
   type SendUserOperationResult,
   type Hex,
+  SimpleSmartContractAccount,
   UserOperationResponse,
   UserOperationReceipt,
 } from "@alchemy/aa-core";
-
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
+import { getAlchemyChain } from "../helpers/chains";
+import { SmartWallet } from "./SmartWallet";
 
-import { BaseAccountSmartWalletWrapper } from "./BaseSmartContractAccountWrapper";
-
-export class AlchemySmartWallet extends BaseAccountSmartWalletWrapper {
+export class AlchemySmartWallet extends SmartWallet {
   private provider: AlchemyProvider | undefined;
+
+  async getAddress(): Promise<Address> {
+    if (this.address) {
+      return this.address;
+    }
+
+    try {
+      const owner = await super.getSimpleAccountOwner();
+      this.address = await owner.getAddress();
+      return this.address;
+    } catch (error) {
+      throw new Error(`Error getting address ${JSON.stringify(error)}`);
+    }
+  }
 
   async sendUserOperation(
     targetAddress: Address,
@@ -48,6 +62,34 @@ export class AlchemySmartWallet extends BaseAccountSmartWalletWrapper {
       return result;
     } catch (error) {
       return Promise.reject(`Transaction failed ${JSON.stringify(error)}`);
+    }
+  }
+
+  private async initAlchemyProvider(): Promise<AlchemyProvider> {
+    try {
+      const owner = await this.getSimpleAccountOwner();
+      this.provider = new AlchemyProvider({
+        chain: super.chain.chainId,
+        entryPointAddress: super.chain.entryPointAddress,
+        apiKey:
+          this.smartWalletProviderInfo.apiKeys[
+            `alchemyKey-${super.chain.name.toLowerCase()}`
+          ],
+      }).connect(
+        (rpcClient) =>
+          new SimpleSmartContractAccount({
+            owner: owner,
+            entryPointAddress: super.chain.entryPointAddress,
+            chain: getAlchemyChain(super.chain),
+            factoryAddress: super.chain.factoryAddress,
+            rpcClient,
+          })
+      );
+      return this.provider;
+    } catch (error) {
+      return Promise.reject(
+        `initAlchemyProvider failed ${JSON.stringify(error)}`
+      );
     }
   }
 
