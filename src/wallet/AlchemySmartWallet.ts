@@ -8,7 +8,7 @@ import {
 
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 
-import { BaseAccountSmartWalletWrapper } from "./BaseAccountSmartWalletWrapper";
+import { BaseAccountSmartWalletWrapper } from "./BaseSmartContractAccountWrapper";
 
 export class AlchemySmartWallet extends BaseAccountSmartWalletWrapper {
   private provider: AlchemyProvider | undefined;

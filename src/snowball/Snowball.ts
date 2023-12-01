@@ -18,6 +18,7 @@ import { Hash, createWalletClient, custom } from "viem";
 import { viemChain, type Chain } from "../helpers/chains";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
 import { AlchemySmartWallet } from "../wallet/AlchemySmartWallet";
+import { AlchemySmartWalletV2 } from "../wallet/AlchemySmartWalletV2";
 import { FunSmartWallet } from "../wallet/FunSmartWallet";
 import { SmartWallet } from "../wallet/SmartWallet";
 import type { SmartWalletProviderInfo } from "../wallet/types";
@@ -70,14 +71,30 @@ export class Snowball {
     }
   }
 
-  private initSmartWallet(): SmartWallet {
+  private initSmartWallet(): SmartWallet | AlchemySmartWalletV2 {
     switch (this.smartWalletProviderInfo.name) {
       case SmartWalletProvider.fun:
         return new FunSmartWallet(this.auth, this.smartWalletProviderInfo);
       default:
       case SmartWalletProvider.alchemy:
-        // TODO: this should return a AlchemySmartWallet with the new light account integration
-        return new AlchemySmartWallet(this.auth, this.smartWalletProviderInfo);
+        const provider = new AlchemyProvider({
+          apiKey: this.apiKey,
+          chain: viemChain(this.chain),
+        });
+
+        const signer = new WalletClientSigner(
+          createWalletClient({
+            transport: custom(provider),
+          }),
+          "lit"
+        );
+
+        return new AlchemySmartWalletV2(
+          this.auth,
+          this.smartWalletProviderInfo,
+          provider,
+          signer
+        );
     }
   }
 
