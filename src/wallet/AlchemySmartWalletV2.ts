@@ -13,7 +13,7 @@ import { Address, Hex } from "viem";
 import { getDefaultLightAccountFactoryAddress } from "@alchemy/aa-accounts";
 import { ISmartWalletV2 } from "./ISmartWalletV2";
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-export class AlchemySmartWalletV3
+export class AlchemySmartWalletV2
   extends LightSmartContractAccount
   implements ISmartWalletV2
 {

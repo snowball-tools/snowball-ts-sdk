@@ -13,7 +13,7 @@ import { Hash, createWalletClient, custom } from "viem";
 import { viemChain, type Chain } from "../helpers/chains";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
 
-import { AlchemySmartWalletV3 } from "../wallet/AlchemySmartWalletV3";
+import { AlchemySmartWalletV2 } from "../wallet/AlchemySmartWalletV2";
 import { FunSmartWallet } from "../wallet/FunSmartWallet";
 
 import type { SmartWalletProviderInfo } from "../wallet/types";
@@ -85,7 +85,7 @@ export class Snowball {
           "lit"
         );
 
-        return new AlchemySmartWalletV3(
+        return new AlchemySmartWalletV2(
           this.auth,
           this.smartWalletProviderInfo,
           provider,
