@@ -3,12 +3,21 @@ import { BaseSmartContractAccountWrapper } from "./BaseSmartContractAccountWrapp
 import { Hash } from "viem";
 import { Auth } from "../auth/Auth";
 import { SmartWalletProviderInfo } from "./types";
-import { SmartAccountSigner } from "@alchemy/aa-core";
+import {
+  SmartAccountSigner,
+  UserOperationReceipt,
+  UserOperationResponse,
+} from "@alchemy/aa-core";
 import { LightSmartContractAccount } from "@alchemy/aa-accounts";
 import { viemChain } from "../helpers/chains";
 import { getDefaultLightAccountFactoryAddress } from "@alchemy/aa-accounts";
-
-export class AlchemySmartWalletV2 extends BaseSmartContractAccountWrapper {
+import { ISmartWalletV2 } from "./ISmartWalletV2";
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
+export class AlchemySmartWalletV2
+  extends BaseSmartContractAccountWrapper
+  implements ISmartWalletV2
+{
+  ethersWallet: PKPEthersWallet | undefined;
   constructor(
     auth: Auth,
     smartWalletProviderInfo: SmartWalletProviderInfo,
@@ -17,19 +26,44 @@ export class AlchemySmartWalletV2 extends BaseSmartContractAccountWrapper {
   ) {
     super(auth, smartWalletProviderInfo, provider, signer);
 
-    provider.connect(
-      (rpcClient) =>
-        new LightSmartContractAccount({
-          chain: viemChain(this.chain),
-          owner: signer,
-          factoryAddress: getDefaultLightAccountFactoryAddress(
-            viemChain(this.chain)
-          ),
-          rpcClient: rpcClient,
-        })
-    );
+    // creates a light account instance
+    async () => {
+      provider.connect(
+        (rpcClient) =>
+          new LightSmartContractAccount({
+            chain: viemChain(this.chain),
+            owner: signer,
+            factoryAddress: getDefaultLightAccountFactoryAddress(
+              viemChain(this.chain)
+            ),
+            rpcClient: rpcClient,
+          })
+      );
 
-    this.provider = provider;
+      this.provider = provider;
+      this.ethersWallet = await auth.getEthersWallet();
+    };
+  }
+
+  address: `0x${string}` | undefined;
+  switchChain(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  sendUserOperation(
+    targetAddress: `0x${string}`,
+    data: `0x${string}`,
+    sponsorGas: boolean
+  ): Promise<{ hash: string }> {
+    throw new Error("Method not implemented.");
+  }
+  waitForUserOperationTransaction(hash: `0x${string}`): Promise<`0x${string}`> {
+    throw new Error("Method not implemented.");
+  }
+  getUserOperationByHash(hash: `0x${string}`): Promise<UserOperationResponse> {
+    throw new Error("Method not implemented.");
+  }
+  getUserOperationReceipt(hash: `0x${string}`): Promise<UserOperationReceipt> {
+    throw new Error("Method not implemented.");
   }
 
   // Implementing or overriding methods from BaseSmartContractAccountWrapper

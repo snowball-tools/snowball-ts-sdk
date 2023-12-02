@@ -8,11 +8,10 @@ import { Chain, viemChain } from "../helpers/chains";
 import { Auth } from "../auth/Auth";
 import { SmartWalletProviderInfo } from "./types";
 import { LitSigner } from "./LitSigner";
-import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
-import { Address, Hash, Hex } from "viem";
+
+import { Hash, Hex } from "viem";
 
 export abstract class BaseSmartContractAccountWrapper extends BaseSmartContractAccount {
-  ethersWallet?: PKPEthersWallet;
   auth: Auth;
   lightAccount: LightSmartContractAccount | undefined;
   smartWalletProviderInfo: SmartWalletProviderInfo;
@@ -34,19 +33,6 @@ export abstract class BaseSmartContractAccountWrapper extends BaseSmartContractA
       ),
     });
 
-    // this.litSigner = new LitSigner(auth, auth.chain, provider);
-
-    // provider.connect(
-    //   (rpcClient) =>
-    //     new LightSmartContractAccount({
-    //       chain: viemChain(this.chain),
-    //       owner: this.litSigner.getLitSigner(provider),
-    //       factoryAddress: getDefaultLightAccountFactoryAddress(
-    //         viemChain(this.chain)
-    //       ),
-    //       rpcClient: rpcClient,
-    //     })
-    // );
     this.chain = auth.chain;
     this.auth = auth;
     this.smartWalletProviderInfo = smartWalletProviderInfo;

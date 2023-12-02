@@ -28,6 +28,7 @@ import { TurkeyPasskey } from "../auth/passkey/TurkeyPasskey";
 import type { AuthProviderInfo } from "../auth/types";
 import { Auth } from "../auth/Auth";
 import { AuthProvider } from "../auth/base";
+import { ISmartWalletV2 } from "../wallet/ISmartWalletV2";
 
 export class Snowball {
   private apiKey: string;
@@ -36,7 +37,7 @@ export class Snowball {
   private smartWalletProviderInfo: SmartWalletProviderInfo;
 
   private auth: Auth;
-  private smartWallet: SmartWallet;
+  private smartWallet: ISmartWalletV2;
 
   constructor(
     apiKey: string,
