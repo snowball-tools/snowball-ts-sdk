@@ -3,24 +3,19 @@ import {
   type Hex,
   type UserOperationReceipt,
   type UserOperationResponse,
-  type SmartAccountSigner,
   WalletClientSigner,
 } from "@alchemy/aa-core";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
-import {
-  LightSmartContractAccount,
-  getDefaultLightAccountFactoryAddress,
-} from "@alchemy/aa-accounts";
 
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Hash, createWalletClient, custom } from "viem";
 
 import { viemChain, type Chain } from "../helpers/chains";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
-import { AlchemySmartWallet } from "../wallet/AlchemySmartWallet";
-import { AlchemySmartWalletV2 } from "../wallet/AlchemySmartWalletV2";
+
+import { AlchemySmartWalletV3 } from "../wallet/AlchemySmartWalletV3";
 import { FunSmartWallet } from "../wallet/FunSmartWallet";
-import { SmartWallet } from "../wallet/SmartWallet";
+
 import type { SmartWalletProviderInfo } from "../wallet/types";
 import { SmartWalletProvider } from "../wallet/base";
 import { LitPasskey } from "../auth/passkey/LitPasskey";
@@ -72,7 +67,7 @@ export class Snowball {
     }
   }
 
-  private initSmartWallet(): SmartWallet | AlchemySmartWalletV2 {
+  private initSmartWallet(): ISmartWalletV2 {
     switch (this.smartWalletProviderInfo.name) {
       case SmartWalletProvider.fun:
         return new FunSmartWallet(this.auth, this.smartWalletProviderInfo);
@@ -90,49 +85,13 @@ export class Snowball {
           "lit"
         );
 
-        return new AlchemySmartWalletV2(
+        return new AlchemySmartWalletV3(
           this.auth,
           this.smartWalletProviderInfo,
           provider,
           signer
         );
     }
-  }
-
-  // example of functioning lit signer instantiation
-  private initLitSignerAccount(): SmartAccountSigner {
-    const provider = new AlchemyProvider({
-      apiKey: this.apiKey,
-      chain: viemChain(this.chain),
-    });
-
-    return new WalletClientSigner(
-      createWalletClient({
-        transport: custom(provider),
-      }),
-      "lit"
-    );
-  }
-
-  // example of functioning light account instantiation
-  async initAlchemyLightAccount(): Promise<Address> {
-    const provider = new AlchemyProvider({
-      apiKey: LIT_RELAY_API_KEY,
-      chain: viemChain(this.chain),
-    }).connect(
-      (rpcClient) =>
-        new LightSmartContractAccount({
-          chain: viemChain(this.chain),
-          owner: this.initLitSignerAccount(),
-          factoryAddress: getDefaultLightAccountFactoryAddress(
-            viemChain(this.chain)
-          ),
-          rpcClient: rpcClient,
-        })
-    );
-
-    const lightAccountAddress = await provider.getAddress();
-    return lightAccountAddress;
   }
 
   async register(username: string): Promise<void> {

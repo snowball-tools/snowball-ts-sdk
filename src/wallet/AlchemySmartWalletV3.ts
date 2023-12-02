@@ -9,6 +9,7 @@ import {
 } from "@alchemy/aa-core";
 import { LightSmartContractAccount } from "@alchemy/aa-accounts";
 import { viemChain } from "../helpers/chains";
+import { Address, Hex } from "viem";
 import { getDefaultLightAccountFactoryAddress } from "@alchemy/aa-accounts";
 import { ISmartWalletV2 } from "./ISmartWalletV2";
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
@@ -19,6 +20,8 @@ export class AlchemySmartWalletV3
   ethersWallet: PKPEthersWallet | undefined;
   auth: Auth;
   smartWalletProviderInfo: SmartWalletProviderInfo;
+  address: `0x${string}` | undefined;
+  provider: AlchemyProvider;
 
   constructor(
     auth: Auth,
@@ -34,18 +37,17 @@ export class AlchemySmartWalletV3
         viemChain(auth.chain)
       ),
     });
-
+    this.provider = provider;
     this.auth = auth;
     this.smartWalletProviderInfo = smartWalletProviderInfo;
   }
 
-  address: `0x${string}` | undefined;
   switchChain(): Promise<void> {
     throw new Error("Method not implemented.");
   }
   sendUserOperation(
-    targetAddress: `0x${string}`,
-    data: `0x${string}`,
+    targetAddress: Address,
+    data: Hex,
     sponsorGas: boolean
   ): Promise<{ hash: string }> {
     throw new Error("Method not implemented.");
