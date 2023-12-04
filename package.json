@@ -32,6 +32,7 @@
   "homepage": "https://github.com/snowball-tools/snowball-ts-sdk#readme",
   "private": false,
   "dependencies": {
+    "@alchemy/aa-accounts": "^1.2.0",
     "@alchemy/aa-alchemy": "^1.2.0",
     "@alchemy/aa-core": "^1.2.0",
     "@ethersproject/contracts": "^5.7.0",
@@ -53,7 +54,6 @@
     "viem": "^1.19.8"
   },
   "devDependencies": {
-    "@alchemy/aa-accounts": "^1.2.0",
     "@types/node": "^20.5.5",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
