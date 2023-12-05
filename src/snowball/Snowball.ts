@@ -13,8 +13,8 @@ import { Hash, createWalletClient, custom } from "viem";
 import { viemChain, type Chain } from "../helpers/chains";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
 
-import { AlchemySmartWalletV2 } from "../wallet/AlchemySmartWalletV2";
-import { FunSmartWalletV2 } from "../wallet/FunSmartWalletV2";
+import { AlchemySmartWallet } from "../wallet/AlchemySmartWallet";
+import { FunSmartWallet } from "../wallet/FunSmartWallet";
 
 import type { SmartWalletProviderInfo } from "../wallet/types";
 import { SmartWalletProvider } from "../wallet/base";
@@ -23,7 +23,7 @@ import { TurkeyPasskey } from "../auth/passkey/TurkeyPasskey";
 import type { AuthProviderInfo } from "../auth/types";
 import { Auth } from "../auth/Auth";
 import { AuthProvider } from "../auth/base";
-import { ISmartWalletV2 } from "../wallet/ISmartWalletV2";
+import { ISmartWallet } from "../wallet/ISmartWallet";
 
 export class Snowball {
   private apiKey: string;
@@ -32,7 +32,7 @@ export class Snowball {
   private smartWalletProviderInfo: SmartWalletProviderInfo;
 
   private auth: Auth;
-  private smartWallet: ISmartWalletV2;
+  private smartWallet: ISmartWallet;
 
   constructor(
     apiKey: string,
@@ -67,10 +67,10 @@ export class Snowball {
     }
   }
 
-  private initSmartWallet(): ISmartWalletV2 {
+  private initSmartWallet(): ISmartWallet {
     switch (this.smartWalletProviderInfo.name) {
       case SmartWalletProvider.fun:
-        return new FunSmartWalletV2(this.auth, this.smartWalletProviderInfo);
+        return new FunSmartWallet(this.auth, this.smartWalletProviderInfo);
       default:
       case SmartWalletProvider.alchemy:
         const provider = new AlchemyProvider({
@@ -85,7 +85,7 @@ export class Snowball {
           "lit",
         );
 
-        return new AlchemySmartWalletV2(
+        return new AlchemySmartWallet(
           this.auth,
           this.smartWalletProviderInfo,
           provider,

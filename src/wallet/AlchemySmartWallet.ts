@@ -1,151 +1,139 @@
-import {
-  type Address,
-  type SendUserOperationResult,
-  type Hex,
-  SimpleSmartContractAccount,
-  UserOperationResponse,
-  UserOperationReceipt,
-} from "@alchemy/aa-core";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
-import { getAlchemyChain } from "../helpers/chains";
-import { SmartWallet } from "./SmartWallet";
+import { Hash } from "viem";
+import { Auth } from "../auth/Auth";
+import { SmartWalletProviderInfo } from "./types";
+import {
+  SmartAccountSigner,
+  UserOperationCallData,
+  UserOperationReceipt,
+  UserOperationResponse,
+} from "@alchemy/aa-core";
+import { Address, Hex } from "viem";
+import {
+  LightSmartContractAccount,
+  getDefaultLightAccountFactoryAddress,
+} from "@alchemy/aa-accounts";
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 
-export class AlchemySmartWallet extends SmartWallet {
-  private provider: AlchemyProvider | undefined;
+import { viemChain, Chain } from "../helpers/chains";
+import { ISmartWallet } from "./ISmartWallet";
+export class AlchemySmartWallet
+  extends LightSmartContractAccount
+  implements ISmartWallet
+{
+  ethersWallet: PKPEthersWallet | undefined;
+  auth: Auth;
+  smartWalletProviderInfo: SmartWalletProviderInfo;
+  provider: AlchemyProvider;
 
-  async getAddress(): Promise<Address> {
-    if (this.address) {
-      return this.address;
-    }
+  constructor(
+    auth: Auth,
+    smartWalletProviderInfo: SmartWalletProviderInfo,
+    provider: AlchemyProvider,
+    signer: SmartAccountSigner,
+  ) {
+    super({
+      rpcClient: provider.rpcClient,
+      owner: signer,
+      chain: viemChain(auth.chain),
+      factoryAddress: getDefaultLightAccountFactoryAddress(
+        viemChain(auth.chain),
+      ),
+    });
+    this.provider = provider;
+    this.auth = auth;
+    this.smartWalletProviderInfo = smartWalletProviderInfo;
+  }
 
+  async switchChain(chain: Chain): Promise<void> {
     try {
-      const owner = await super.getSimpleAccountOwner();
-      this.address = await owner.getAddress();
-      return this.address;
+      this.auth.switchChain(chain);
     } catch (error) {
-      throw new Error(`Error getting address ${JSON.stringify(error)}`);
+      throw new Error(
+        `Failed to switch chain: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
     }
   }
 
   async sendUserOperation(
-    targetAddress: Address,
+    target: Address,
     data: Hex,
-    sponsorGas: boolean
-  ): Promise<SendUserOperationResult> {
+    value?: bigint,
+  ): Promise<{ hash: string }> {
     try {
-      this.provider = this.provider
-        ? this.provider
-        : await this.initAlchemyProvider();
-
-      const gasPolicyId =
-        this.smartWalletProviderInfo.apiKeys[
-          `alchemyKey-${super.chain.name.toLowerCase()}-gasPolicyId`
-        ];
-
-      if (gasPolicyId && sponsorGas) {
-        this.provider = this.provider.withAlchemyGasManager({
-          policyId: gasPolicyId,
-          entryPoint: super.chain.entryPointAddress,
-        });
-      }
-
-      const result: SendUserOperationResult =
-        await this.provider.sendUserOperation({
-          target: targetAddress,
-          data: data,
-        });
-
-      if (result === undefined || result.hash === undefined) {
-        return Promise.reject("Transaction failed");
-      }
-
-      return result;
-    } catch (error) {
-      return Promise.reject(`Transaction failed ${JSON.stringify(error)}`);
-    }
-  }
-
-  private async initAlchemyProvider(): Promise<AlchemyProvider> {
-    try {
-      const owner = await this.getSimpleAccountOwner();
-      this.provider = new AlchemyProvider({
-        chain: super.chain.chainId,
-        entryPointAddress: super.chain.entryPointAddress,
-        apiKey:
-          this.smartWalletProviderInfo.apiKeys[
-            `alchemyKey-${super.chain.name.toLowerCase()}`
-          ],
-      }).connect(
-        (rpcClient) =>
-          new SimpleSmartContractAccount({
-            owner: owner,
-            entryPointAddress: super.chain.entryPointAddress,
-            chain: getAlchemyChain(super.chain),
-            factoryAddress: super.chain.factoryAddress,
-            rpcClient,
-          })
+      const userOperationCallData: UserOperationCallData = {
+        target: target,
+        data: data,
+        value: value,
+      };
+      const response = await this.provider.sendUserOperation(
+        userOperationCallData,
       );
-      return this.provider;
+      return { hash: response.hash };
     } catch (error) {
-      return Promise.reject(
-        `initAlchemyProvider failed ${JSON.stringify(error)}`
+      throw new Error(
+        `Failed to send user operation: ${
+          error instanceof Error ? error.message : error
+        }`,
       );
     }
   }
 
-  async waitForUserOperationTransaction(
-    hash: `0x${string}`
-  ): Promise<`0x${string}`> {
+  async waitForUserOperationTransaction(hash: Hash): Promise<Hash> {
     try {
-      this.provider = this.provider
-        ? this.provider
-        : await this.initAlchemyProvider();
-
       return await this.provider.waitForUserOperationTransaction(hash);
     } catch (error) {
-      return Promise.reject(
-        `waitForUserOperationTransaction failed ${JSON.stringify(error)}`
+      throw new Error(
+        `Failed to wait for user operation transaction: ${
+          error instanceof Error ? error.message : error
+        }`,
       );
     }
   }
 
   async getUserOperationByHash(
-    hash: `0x${string}`
-  ): Promise<UserOperationResponse> {
+    hash: Hash,
+  ): Promise<UserOperationResponse | null> {
     try {
-      this.provider = this.provider
-        ? this.provider
-        : await this.initAlchemyProvider();
-
       return await this.provider.getUserOperationByHash(hash);
     } catch (error) {
-      return Promise.reject(
-        `getUserOperationByHash failed ${JSON.stringify(error)}`
+      throw new Error(
+        `Failed to get user operation by hash: ${
+          error instanceof Error ? error.message : error
+        }`,
       );
     }
   }
 
   async getUserOperationReceipt(
-    hash: `0x${string}`
-  ): Promise<UserOperationReceipt> {
+    hash: Hash,
+  ): Promise<UserOperationReceipt | null> {
     try {
-      this.provider = this.provider
-        ? this.provider
-        : await this.initAlchemyProvider();
-
       return await this.provider.getUserOperationReceipt(hash);
     } catch (error) {
-      return Promise.reject(
-        `getUserOperationByHash failed ${JSON.stringify(error)}`
+      throw new Error(
+        `Failed to get user operation receipt: ${
+          error instanceof Error ? error.message : error
+        }`,
       );
     }
   }
 
-  async switchChain(): Promise<void> {
-    try {
-      this.provider = await this.initAlchemyProvider();
-    } catch (error) {
-      return Promise.reject(`changeChain failed ${JSON.stringify(error)}`);
-    }
+  override async encodeExecute(
+    target: string,
+    value: bigint,
+    data: string,
+  ): Promise<Hash> {
+    throw new Error("Method not implemented.");
+  }
+
+  override async signMessage(msg: string | Uint8Array): Promise<Hash> {
+    throw new Error("Method not implemented.");
+  }
+
+  override async getAccountInitCode(): Promise<Hash> {
+    throw new Error("Method not implemented.");
   }
 }
