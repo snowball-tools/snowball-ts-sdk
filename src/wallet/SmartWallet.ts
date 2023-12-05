@@ -77,9 +77,9 @@ export abstract class SmartWallet {
   abstract getAddress(): Promise<Address>;
   abstract switchChain(): Promise<void>;
   abstract sendUserOperation(
-    targetAddress: Address,
+    target: Address,
     data: Hex,
-    sponsorGas: boolean
+    value?: bigint
   ): Promise<{
     hash: string;
   }>;

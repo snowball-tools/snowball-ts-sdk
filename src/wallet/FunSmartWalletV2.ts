@@ -1,15 +1,15 @@
 /* eslint-disable */
-import type { Address } from "viem";
+import type { Address, Hex } from "viem";
 import { UserOperationResponse, UserOperationReceipt } from "@alchemy/aa-core";
 import { SmartWallet } from "./SmartWallet";
 import type { ISmartWalletV2 } from "./ISmartWalletV2";
 
-export class FunSmartWallet extends SmartWallet implements ISmartWalletV2 {
+export class FunSmartWalletV2 extends SmartWallet implements ISmartWalletV2 {
   async sendUserOperation(
-    _targetAddress: Address,
-    _data: Address,
-    _sponsorGas: boolean
-  ): Promise<{ hash: string }> {
+    target: Address,
+    data: Hex,
+    value?: bigint
+    ): Promise<{ hash: string }> {
     throw new Error("Method not implemented.");
   }
 

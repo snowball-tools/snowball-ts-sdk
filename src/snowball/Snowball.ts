@@ -14,7 +14,7 @@ import { viemChain, type Chain } from "../helpers/chains";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
 
 import { AlchemySmartWalletV2 } from "../wallet/AlchemySmartWalletV2";
-import { FunSmartWallet } from "../wallet/FunSmartWallet";
+import { FunSmartWalletV2 } from "../wallet/FunSmartWalletV2";
 
 import type { SmartWalletProviderInfo } from "../wallet/types";
 import { SmartWalletProvider } from "../wallet/base";
@@ -38,7 +38,7 @@ export class Snowball {
     apiKey: string,
     chain: Chain,
     authProviderInfo: AuthProviderInfo,
-    smartWalletProviderInfo: SmartWalletProviderInfo
+    smartWalletProviderInfo: SmartWalletProviderInfo,
   ) {
     this.apiKey = apiKey;
     this.chain = chain;
@@ -70,7 +70,7 @@ export class Snowball {
   private initSmartWallet(): ISmartWalletV2 {
     switch (this.smartWalletProviderInfo.name) {
       case SmartWalletProvider.fun:
-        return new FunSmartWallet(this.auth, this.smartWalletProviderInfo);
+        return new FunSmartWalletV2(this.auth, this.smartWalletProviderInfo);
       default:
       case SmartWalletProvider.alchemy:
         const provider = new AlchemyProvider({
@@ -82,14 +82,14 @@ export class Snowball {
           createWalletClient({
             transport: custom(provider),
           }),
-          "lit"
+          "lit",
         );
 
         return new AlchemySmartWalletV2(
           this.auth,
           this.smartWalletProviderInfo,
           provider,
-          signer
+          signer,
         );
     }
   }
@@ -121,7 +121,7 @@ export class Snowball {
   async switchChain(chain: Chain) {
     try {
       this.chain = chain;
-      this.smartWallet.switchChain();
+      this.smartWallet.switchChain(chain);
     } catch (error) {
       return Promise.reject(`changeChain failed ${error}`);
     }
@@ -136,18 +136,14 @@ export class Snowball {
   }
 
   async sendUserOperation(
-    targetAddress: Address,
+    target: Address,
     data: Hex,
-    sponsorGas: boolean
+    value?: bigint,
   ): Promise<{
     hash: string;
   }> {
     try {
-      return await this.smartWallet.sendUserOperation(
-        targetAddress,
-        data,
-        sponsorGas
-      );
+      return await this.smartWallet.sendUserOperation(target, data, value);
     } catch (error) {
       return Promise.reject(`sendUserOperation failed ${error}`);
     }
@@ -161,7 +157,9 @@ export class Snowball {
     }
   }
 
-  async getUserOperationByHash(hash: Hash): Promise<UserOperationResponse> {
+  async getUserOperationByHash(
+    hash: Hash,
+  ): Promise<UserOperationResponse | null> {
     try {
       return await this.smartWallet.getUserOperationByHash(hash);
     } catch (error) {
@@ -169,7 +167,9 @@ export class Snowball {
     }
   }
 
-  async getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt> {
+  async getUserOperationReceipt(
+    hash: Hash,
+  ): Promise<UserOperationReceipt | null> {
     try {
       return await this.smartWallet.getUserOperationReceipt(hash);
     } catch (error) {

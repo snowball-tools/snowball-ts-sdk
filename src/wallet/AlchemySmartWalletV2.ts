@@ -4,13 +4,17 @@ import { Auth } from "../auth/Auth";
 import { SmartWalletProviderInfo } from "./types";
 import {
   SmartAccountSigner,
+  UserOperationCallData,
   UserOperationReceipt,
   UserOperationResponse,
 } from "@alchemy/aa-core";
-import { LightSmartContractAccount } from "@alchemy/aa-accounts";
 import { viemChain } from "../helpers/chains";
+import { Chain } from "../helpers/chains";
 import { Address, Hex } from "viem";
-import { getDefaultLightAccountFactoryAddress } from "@alchemy/aa-accounts";
+import {
+  LightSmartContractAccount,
+  getDefaultLightAccountFactoryAddress,
+} from "@alchemy/aa-accounts";
 import { ISmartWalletV2 } from "./ISmartWalletV2";
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 export class AlchemySmartWalletV2
@@ -20,21 +24,20 @@ export class AlchemySmartWalletV2
   ethersWallet: PKPEthersWallet | undefined;
   auth: Auth;
   smartWalletProviderInfo: SmartWalletProviderInfo;
-  address: `0x${string}` | undefined;
   provider: AlchemyProvider;
 
   constructor(
     auth: Auth,
     smartWalletProviderInfo: SmartWalletProviderInfo,
     provider: AlchemyProvider,
-    signer: SmartAccountSigner
+    signer: SmartAccountSigner,
   ) {
     super({
       rpcClient: provider.rpcClient,
       owner: signer,
       chain: viemChain(auth.chain),
       factoryAddress: getDefaultLightAccountFactoryAddress(
-        viemChain(auth.chain)
+        viemChain(auth.chain),
       ),
     });
     this.provider = provider;
@@ -42,52 +45,96 @@ export class AlchemySmartWalletV2
     this.smartWalletProviderInfo = smartWalletProviderInfo;
   }
 
-  switchChain(): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  sendUserOperation(
-    targetAddress: Address,
-    data: Hex,
-    sponsorGas: boolean
-  ): Promise<{ hash: string }> {
-    throw new Error("Method not implemented.");
-  }
-  waitForUserOperationTransaction(hash: `0x${string}`): Promise<`0x${string}`> {
-    throw new Error("Method not implemented.");
-  }
-  getUserOperationByHash(hash: `0x${string}`): Promise<UserOperationResponse> {
-    throw new Error("Method not implemented.");
-  }
-  getUserOperationReceipt(hash: `0x${string}`): Promise<UserOperationReceipt> {
-    throw new Error("Method not implemented.");
+  async switchChain(chain: Chain): Promise<void> {
+    try {
+      this.auth.switchChain(chain);
+    } catch (error) {
+      throw new Error(
+        `Failed to switch chain: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
+    }
   }
 
-  // Implementing or overriding methods from BaseSmartContractAccountWrapper
+  async sendUserOperation(
+    target: Address,
+    data: Hex,
+    value?: bigint,
+  ): Promise<{ hash: string }> {
+    try {
+      const userOperationCallData: UserOperationCallData = {
+        target: target,
+        data: data,
+        value: value,
+      };
+
+      const response = await this.provider.sendUserOperation(
+        userOperationCallData,
+      );
+      return { hash: response.hash };
+    } catch (error) {
+      throw new Error(
+        `Failed to send user operation: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
+    }
+  }
+
+  async waitForUserOperationTransaction(hash: Hash): Promise<Hash> {
+    try {
+      return await this.provider.waitForUserOperationTransaction(hash);
+    } catch (error) {
+      throw new Error(
+        `Failed to wait for user operation transaction: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
+    }
+  }
+
+  async getUserOperationByHash(
+    hash: Hash,
+  ): Promise<UserOperationResponse | null> {
+    try {
+      return await this.provider.getUserOperationByHash(hash);
+    } catch (error) {
+      throw new Error(
+        `Failed to get user operation by hash: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
+    }
+  }
+
+  async getUserOperationReceipt(
+    hash: Hash,
+  ): Promise<UserOperationReceipt | null> {
+    try {
+      return await this.provider.getUserOperationReceipt(hash);
+    } catch (error) {
+      throw new Error(
+        `Failed to get user operation receipt: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
+    }
+  }
+
   override async encodeExecute(
     target: string,
     value: bigint,
-    data: string
+    data: string,
   ): Promise<Hash> {
-    // Specific implementation for AlchemySmartWalletV2
-    // TODO: Provide the logic to encode the execute method call for AlchemySmartWalletV2
-    return "0x"; // Placeholder implementation
+    throw new Error("Method not implemented.");
   }
 
   override async signMessage(msg: string | Uint8Array): Promise<Hash> {
-    // Specific implementation for AlchemySmartWalletV2
-    // TODO: Provide the logic to sign a message for AlchemySmartWalletV2
-    return "0x"; // Placeholder implementation
+    throw new Error("Method not implemented.");
   }
 
   override async getAccountInitCode(): Promise<Hash> {
-    // Specific implementation for AlchemySmartWalletV2
-    // TODO: Provide the logic to return the account init code for AlchemySmartWalletV2
-    return "0x"; // Placeholder implementation
-  }
-
-  // Implement additional methods specific to AlchemySmartWalletV2, if necessary
-  // Example:
-  async performCustomOperation(): Promise<void> {
-    // Custom operation logic specific to AlchemySmartWalletV2
+    throw new Error("Method not implemented.");
   }
 }
