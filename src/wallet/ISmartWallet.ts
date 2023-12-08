@@ -5,7 +5,6 @@ import {
 } from "@alchemy/aa-core";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Hash, Hex } from "viem";
-//import { SmartWalletProviderInfo } from "./types";
 import { Chain } from "../helpers/chains";
 
 /**
@@ -15,7 +14,7 @@ export interface ISmartWallet {
   /** Ethers wallet associated with the smart wallet. */
   ethersWallet: PKPEthersWallet | undefined;
 
-  /** Retrieves the address associated with this smart wallet. */
+  /** Retrieves the contract address of this smart wallet. */
   getAddress(): Promise<Address>;
 
   /**
@@ -37,12 +36,18 @@ export interface ISmartWallet {
     value?: bigint,
   ): Promise<{ hash: string }>;
 
-  /** Waits for a user operation transaction to complete. */
+  /** Waits for a user operation transaction to complete.
+   * @param hash The hash of the operation.
+   */
   waitForUserOperationTransaction(hash: Hash): Promise<Hash>;
 
-  /** Retrieves a user operation by its hash. */
+  /** Retrieves a user operation by its hash.
+   * @param hash The hash of the operation.
+   */
   getUserOperationByHash(hash: Hash): Promise<UserOperationResponse | null>;
 
-  /** Retrieves a receipt for a user operation. */
+  /** Retrieves a receipt for a user operation.
+   * @param hash The hash of the operation.
+   */
   getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt | null>;
 }
