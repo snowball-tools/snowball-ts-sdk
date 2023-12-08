@@ -86,8 +86,8 @@ export class Snowball {
         );
 
         return new AlchemySmartWallet(
-          this.auth,
-          this.smartWalletProviderInfo,
+          this.chain,
+          this.authProviderInfo,
           provider,
           signer,
         );
