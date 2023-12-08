@@ -9,7 +9,7 @@ import { AuthProvider } from "../../auth/base";
 import { CHAINS } from "../../helpers/chains";
 import { AlchemySmartWallet } from "../AlchemySmartWallet";
 
-describe.only("Alchemy Smart Wallet Tests", () => {
+describe("Alchemy Smart Wallet Tests", () => {
   let directProvider: AlchemyProvider;
   const alchemyProviderChain = sepolia;
 
@@ -61,22 +61,11 @@ describe.only("Alchemy Smart Wallet Tests", () => {
     );
   });
 
-  //   test("get alchemy smart account owner address", async () => {
-  //     const alchemySmartWalletOwnerAddress =
-  //       await alchemySmartWallet.getOwnerAddress();
-  //     const directProviderOwnerAddress = await directProvider.getAddress();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-  //     // log the addresses
-  //     console.log(
-  //       "Alchemy Smart Wallet Owner Address: ",
-  //       alchemySmartWalletOwnerAddress,
-  //     );
-  //     console.log("Direct Provider Owner Address: ", directProviderOwnerAddress);
-
-  //     expect(alchemySmartWalletOwnerAddress).toBe(directProviderOwnerAddress);
-  //   });
-
-  test.only("should correctly sign the message", async () => {
+  test("should correctly sign the message", async () => {
     expect(
       await directProvider.signMessage(
         "0xa70d0af2ebb03a44dcd0714a8724f622e3ab876d0aa312f0ee04823285d6fb1b",
