@@ -5,8 +5,7 @@ import {
 } from "@alchemy/aa-core";
 import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 import { Hash, Hex } from "viem";
-import { Auth } from "../auth/Auth";
-import { SmartWalletProviderInfo } from "./types";
+//import { SmartWalletProviderInfo } from "./types";
 import { Chain } from "../helpers/chains";
 
 /**
@@ -16,23 +15,17 @@ export interface ISmartWallet {
   /** Ethers wallet associated with the smart wallet. */
   ethersWallet: PKPEthersWallet | undefined;
 
-  /** Authentication used by the smart wallet. */
-  auth: Auth;
-
-  /** Provider info for the smart wallet. */
-  smartWalletProviderInfo: SmartWalletProviderInfo;
-
   /** Retrieves the address associated with this smart wallet. */
   getAddress(): Promise<Address>;
 
   /**
-   * Switches the current blockchain chain.
+   * Switches the current chain.
    * @param chain The chain to switch to.
    */
   switchChain(chain: Chain): Promise<void>;
 
   /**
-   * Sends a user operation to the blockchain.
+   * Sends a user operation.
    * @param target The target address.
    * @param data The data to send.
    * @param value The value to send, if any.

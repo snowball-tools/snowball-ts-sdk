@@ -1,7 +1,5 @@
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { Hash } from "viem";
-import { Auth } from "../auth/Auth";
-import { SmartWalletProviderInfo } from "./types";
 import {
   SmartAccountSigner,
   UserOperationCallData,
@@ -17,44 +15,34 @@ import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
 
 import { viemChain, Chain } from "../helpers/chains";
 import { ISmartWallet } from "./ISmartWallet";
+import { AuthProviderInfo } from "../auth";
+//import { SmartWallet } from "./SmartWallet";
 export class AlchemySmartWallet
   extends LightSmartContractAccount
   implements ISmartWallet
 {
   ethersWallet: PKPEthersWallet | undefined;
-  auth: Auth;
-  smartWalletProviderInfo: SmartWalletProviderInfo;
   provider: AlchemyProvider;
+  authProviderInfo: AuthProviderInfo;
 
   constructor(
-    auth: Auth,
-    smartWalletProviderInfo: SmartWalletProviderInfo,
+    chain: Chain,
+    authProviderInfo: AuthProviderInfo,
     provider: AlchemyProvider,
     signer: SmartAccountSigner,
   ) {
     super({
       rpcClient: provider.rpcClient,
       owner: signer,
-      chain: viemChain(auth.chain),
-      factoryAddress: getDefaultLightAccountFactoryAddress(
-        viemChain(auth.chain),
-      ),
+      chain: viemChain(chain),
+      factoryAddress: getDefaultLightAccountFactoryAddress(viemChain(chain)),
     });
     this.provider = provider;
-    this.auth = auth;
-    this.smartWalletProviderInfo = smartWalletProviderInfo;
+    this.authProviderInfo = authProviderInfo;
   }
 
   async switchChain(chain: Chain): Promise<void> {
-    try {
-      this.auth.switchChain(chain);
-    } catch (error) {
-      throw new Error(
-        `Failed to switch chain: ${
-          error instanceof Error ? error.message : error
-        }`,
-      );
-    }
+    throw new Error("Method not implemented.");
   }
 
   async sendUserOperation(
@@ -126,14 +114,6 @@ export class AlchemySmartWallet
     value: bigint,
     data: string,
   ): Promise<Hash> {
-    throw new Error("Method not implemented.");
-  }
-
-  override async signMessage(msg: string | Uint8Array): Promise<Hash> {
-    throw new Error("Method not implemented.");
-  }
-
-  override async getAccountInitCode(): Promise<Hash> {
     throw new Error("Method not implemented.");
   }
 }

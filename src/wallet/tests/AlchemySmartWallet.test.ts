@@ -1,21 +1,17 @@
 import { LocalAccountSigner, SmartAccountSigner } from "@alchemy/aa-core";
-import { type Chain } from "viem";
 import { getDefaultLightAccountFactoryAddress } from "@alchemy/aa-accounts";
 import { AlchemyProvider } from "@alchemy/aa-alchemy";
 import { sepolia } from "viem/chains";
-
-("../../index.js");
 import { LightSmartContractAccount } from "@alchemy/aa-accounts";
-import { API_KEY } from "./constants";
-
+import "dotenv/config";
+import { AuthProviderInfo } from "../../auth";
+import { AuthProvider } from "../../auth/base";
+import { CHAINS } from "../../helpers/chains";
 import { AlchemySmartWallet } from "../AlchemySmartWallet";
-import { Auth } from "../../auth";
-import { SmartWalletProviderInfo } from "../types";
 
-const chain = sepolia;
-
-describe("Alchemy Smart Wallet Tests", () => {
+describe.only("Alchemy Smart Wallet Tests", () => {
   let directProvider: AlchemyProvider;
+  const alchemyProviderChain = sepolia;
 
   const dummyMnemonic =
     "test test test test test test test test test test test test";
@@ -23,67 +19,77 @@ describe("Alchemy Smart Wallet Tests", () => {
     LocalAccountSigner.mnemonicToAccountSigner(dummyMnemonic);
 
   let alchemySmartWalletProvider: AlchemyProvider;
-  let alchemySmartWalletAuth: Auth;
-  let alchemySmartWalletProviderInfo: SmartWalletProviderInfo;
-  let alchemySmartWalletSigner: SmartAccountSigner;
+  //let alchemySmartWalletAuth: Auth;
   let alchemySmartWallet: AlchemySmartWallet;
 
   beforeEach(() => {
-    directProvider = getProviderConnectedToLightAccount({ owner, chain });
-
-    alchemySmartWalletProvider = new AlchemyProvider({
-      apiKey: API_KEY!,
-      chain,
-    });
-
-    alchemySmartWalletProviderInfo = {
-      name: SmartWalletProvider.alchemy,
+    // cannot create an abstract class
+    let mockAuthProviderInfo: AuthProviderInfo = {
+      name: AuthProvider.lit,
       apiKeys: {
-        [AlchemySmartWalletProviderKey.ethereumGoerli]: ALCHEMY_GOERLI_API_KEY,
-        [AlchemySmartWalletProviderKey.ethereumGoerli_gasPolicyId]:
-          ALCHEMY_GOERLI_GAS_POLICY_ID,
-        [AlchemySmartWalletProviderKey.ethereumSepolia]:
-          ALCHEMY_SEPOLIA_API_KEY,
-        [AlchemySmartWalletProviderKey.ethereumSepolia_gasPolicyId]:
-          ALCHEMY_SEPOLIA_GAS_POLICY_ID,
+        /* relevant keys */
       },
     };
 
+    // directly create a alchemy provider connected to a light account
+    directProvider = new AlchemyProvider({
+      apiKey: process.env["ALCHEMY_SEPOLIA_API_KEY"]!,
+      chain: alchemyProviderChain,
+    }).connect(
+      (rpcClient) =>
+        new LightSmartContractAccount({
+          rpcClient: rpcClient,
+          owner: owner,
+          chain: alchemyProviderChain,
+          factoryAddress:
+            getDefaultLightAccountFactoryAddress(alchemyProviderChain),
+        }),
+    );
+
+    // alchemy smart wallet provider (not light account) used to create alchemy smart wallet,
+    // which itself is connected to a light account
+    alchemySmartWalletProvider = new AlchemyProvider({
+      apiKey: process.env["ALCHEMY_SEPOLIA_API_KEY"]!,
+      chain: alchemyProviderChain,
+    });
+
     alchemySmartWallet = new AlchemySmartWallet(
-      alchemySmartWalletAuth,
-      alchemySmartWalletProviderInfo,
+      CHAINS.sepolia,
+      mockAuthProviderInfo,
       alchemySmartWalletProvider,
       owner,
     );
   });
 
-  const getProviderConnectedToLightAccount = ({
-    owner,
-    chain,
-  }: {
-    owner: SmartAccountSigner;
-    chain: Chain;
-  }) => {
-    const provider = new AlchemyProvider({
-      apiKey: API_KEY!,
-      chain,
-    }).connect(
-      (rpcClient) =>
-        new LightSmartContractAccount({
-          chain,
-          owner,
-          factoryAddress: getDefaultLightAccountFactoryAddress(chain),
-          rpcClient,
-        }),
-    );
+  //   test("get alchemy smart account owner address", async () => {
+  //     const alchemySmartWalletOwnerAddress =
+  //       await alchemySmartWallet.getOwnerAddress();
+  //     const directProviderOwnerAddress = await directProvider.getAddress();
 
-    return provider;
-  };
+  //     // log the addresses
+  //     console.log(
+  //       "Alchemy Smart Wallet Owner Address: ",
+  //       alchemySmartWalletOwnerAddress,
+  //     );
+  //     console.log("Direct Provider Owner Address: ", directProviderOwnerAddress);
 
-  test.only("get owner address", () => {
-    expect(alchemySmartWallet.getOwnerAddress()).toBe(
-      alchemySmartWalletSigner.getAddress(),
+  //     expect(alchemySmartWalletOwnerAddress).toBe(directProviderOwnerAddress);
+  //   });
+
+  test.only("should correctly sign the message", async () => {
+    expect(
+      await directProvider.signMessage(
+        "0xa70d0af2ebb03a44dcd0714a8724f622e3ab876d0aa312f0ee04823285d6fb1b",
+      ),
+    ).toBe(
+      "0x33b1b0d34ba3252cd8abac8147dc08a6e14a6319462456a34468dd5713e38dda3a43988460011af94b30fa3efefcf9d0da7d7522e06b7bd8bff3b65be4aee5b31c",
     );
-    expect(directProvider.getAddress()).toBe(owner.getAddress());
+    expect(
+      await alchemySmartWallet.signMessage(
+        "0xa70d0af2ebb03a44dcd0714a8724f622e3ab876d0aa312f0ee04823285d6fb1b",
+      ),
+    ).toBe(
+      "0x33b1b0d34ba3252cd8abac8147dc08a6e14a6319462456a34468dd5713e38dda3a43988460011af94b30fa3efefcf9d0da7d7522e06b7bd8bff3b65be4aee5b31c",
+    );
   });
 });
