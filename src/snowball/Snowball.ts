@@ -1,16 +1,21 @@
-import type {
-  Address,
-  Hex,
-  UserOperationReceipt,
-  UserOperationResponse,
+import {
+  type Address,
+  type Hex,
+  type UserOperationReceipt,
+  type UserOperationResponse,
+  WalletClientSigner,
 } from "@alchemy/aa-core";
-import type { Chain } from "../helpers/chains";
-import type { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
+import { AlchemyProvider } from "@alchemy/aa-alchemy";
+
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
+import { Hash, createWalletClient, custom } from "viem";
+
+import { viemChain, type Chain } from "../helpers/chains";
 import { LIT_RELAY_API_KEY } from "../helpers/env";
-import { Hash } from "viem";
+
 import { AlchemySmartWallet } from "../wallet/AlchemySmartWallet";
 import { FunSmartWallet } from "../wallet/FunSmartWallet";
-import { SmartWallet } from "../wallet/SmartWallet";
+
 import type { SmartWalletProviderInfo } from "../wallet/types";
 import { SmartWalletProvider } from "../wallet/base";
 import { LitPasskey } from "../auth/passkey/LitPasskey";
@@ -18,6 +23,7 @@ import { TurkeyPasskey } from "../auth/passkey/TurkeyPasskey";
 import type { AuthProviderInfo } from "../auth/types";
 import { Auth } from "../auth/Auth";
 import { AuthProvider } from "../auth/base";
+import { ISmartWallet } from "../wallet/ISmartWallet";
 
 export class Snowball {
   private apiKey: string;
@@ -26,13 +32,13 @@ export class Snowball {
   private smartWalletProviderInfo: SmartWalletProviderInfo;
 
   private auth: Auth;
-  private smartWallet: SmartWallet;
+  private smartWallet: ISmartWallet;
 
   constructor(
     apiKey: string,
     chain: Chain,
     authProviderInfo: AuthProviderInfo,
-    smartWalletProviderInfo: SmartWalletProviderInfo
+    smartWalletProviderInfo: SmartWalletProviderInfo,
   ) {
     this.apiKey = apiKey;
     this.chain = chain;
@@ -61,13 +67,30 @@ export class Snowball {
     }
   }
 
-  private initSmartWallet(): SmartWallet {
+  private initSmartWallet(): ISmartWallet {
     switch (this.smartWalletProviderInfo.name) {
       case SmartWalletProvider.fun:
         return new FunSmartWallet(this.auth, this.smartWalletProviderInfo);
       default:
       case SmartWalletProvider.alchemy:
-        return new AlchemySmartWallet(this.auth, this.smartWalletProviderInfo);
+        const provider = new AlchemyProvider({
+          apiKey: this.apiKey,
+          chain: viemChain(this.chain),
+        });
+
+        const signer = new WalletClientSigner(
+          createWalletClient({
+            transport: custom(provider),
+          }),
+          "lit",
+        );
+
+        return new AlchemySmartWallet(
+          this.chain,
+          this.authProviderInfo,
+          provider,
+          signer,
+        );
     }
   }
 
@@ -98,7 +121,7 @@ export class Snowball {
   async switchChain(chain: Chain) {
     try {
       this.chain = chain;
-      this.smartWallet.switchChain();
+      this.smartWallet.switchChain(chain);
     } catch (error) {
       return Promise.reject(`changeChain failed ${error}`);
     }
@@ -113,18 +136,14 @@ export class Snowball {
   }
 
   async sendUserOperation(
-    targetAddress: Address,
+    target: Address,
     data: Hex,
-    sponsorGas: boolean
+    value?: bigint,
   ): Promise<{
     hash: string;
   }> {
     try {
-      return await this.smartWallet.sendUserOperation(
-        targetAddress,
-        data,
-        sponsorGas
-      );
+      return await this.smartWallet.sendUserOperation(target, data, value);
     } catch (error) {
       return Promise.reject(`sendUserOperation failed ${error}`);
     }
@@ -138,7 +157,9 @@ export class Snowball {
     }
   }
 
-  async getUserOperationByHash(hash: Hash): Promise<UserOperationResponse> {
+  async getUserOperationByHash(
+    hash: Hash,
+  ): Promise<UserOperationResponse | null> {
     try {
       return await this.smartWallet.getUserOperationByHash(hash);
     } catch (error) {
@@ -146,7 +167,9 @@ export class Snowball {
     }
   }
 
-  async getUserOperationReceipt(hash: Hash): Promise<UserOperationReceipt> {
+  async getUserOperationReceipt(
+    hash: Hash,
+  ): Promise<UserOperationReceipt | null> {
     try {
       return await this.smartWallet.getUserOperationReceipt(hash);
     } catch (error) {

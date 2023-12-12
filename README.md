@@ -2,6 +2,21 @@
 
 This is a simple library to authenticate with the Snowball SDK
 
+## Contributing
+
+install dependencies with yarn
+
+```sh
+yarn
+```
+
+use node version v18.16.0
+
+```sh
+node -v
+v18.16.0
+```
+
 ## Installation
 
 ```sh
@@ -30,7 +45,7 @@ import {
 } from "./env";
 
 export const snowball = new Snowball(
-  "snowball-api-key", 
+  "snowball-api-key",
   CHAINS.goerli,
   {
     name: AuthProvider.lit,
@@ -45,7 +60,7 @@ export const snowball = new Snowball(
       [AlchemySmartWalletProviderKey.sepolia_gasPolicyId]:
         ALCHEMY_SEPOLIA_GAS_POLICY_ID,
     },
-  }
+  },
 );
 ```
 
